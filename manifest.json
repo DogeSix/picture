@@ -1,0 +1,10 @@
+{
+  "name": "彩虹魔法畫布 Rainbow Magic Canvas Pro",
+  "short_name": "彩虹魔法畫布",
+  "description": "融合全球十大兒童塗鴉APP精髓 × 54款智慧防出界塗鴉公版 × 5大創意藝術小遊戲 (iPad mini 7 旗艦版)",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#FFF5F8",
+  "theme_color": "#FF5E7E"
+}

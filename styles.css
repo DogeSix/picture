@@ -1,0 +1,1479 @@
+/* ==========================================================================
+   🎨 彩虹魔法畫布 Rainbow Magic Canvas Pro - iPad mini 7 旗艦觸控最佳化樣式表
+   專為 Apple iPad mini 7 (8.3" Liquid Retina 1133×744 / 744×1133) 與電腦瀏覽器設計
+   ========================================================================== */
+
+:root {
+  --bg-gradient: linear-gradient(135deg, #FFF5F8 0%, #F0F7FF 50%, #FFFBEB 100%);
+  --card-bg: #FFFFFF;
+  --primary: #FF5E7E;
+  --primary-dark: #E03E60;
+  --secondary: #3A86FF;
+  --accent-yellow: #FFBE0B;
+  --accent-green: #06D6A0;
+  --accent-purple: #8338EC;
+  --text-dark: #2C3E50;
+  --text-muted: #5C6B73;
+  --border-soft: #E2E8F0;
+  --shadow-soft: 0 8px 24px rgba(44, 62, 80, 0.08);
+  --shadow-pop: 0 6px 0 rgba(44, 62, 80, 0.14);
+  --radius-lg: 22px;
+  --radius-md: 16px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  font-family: "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", "Rounded Mplus 1c", sans-serif;
+  background: #1A1D24;
+  color: var(--text-dark);
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+/* 全螢幕煙火特效層 */
+.confetti-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* 📱 iPad mini 7 外框預覽 vs 全螢幕滿版模式 */
+.device-wrapper {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at center, #2B303C 0%, #14171F 100%);
+  transition: all 0.3s ease;
+}
+
+.ipad-bezel-header {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  color: #E2E8F0;
+  font-size: 13px;
+  margin-bottom: 8px;
+  padding: 6px 16px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+}
+
+.device-wrapper.ipad-frame-mode .ipad-bezel-header {
+  display: flex;
+}
+
+.camera-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #38BDF8;
+  box-shadow: 0 0 8px #38BDF8;
+}
+
+.bezel-btn {
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.12);
+  color: #FFFFFF;
+  padding: 4px 12px;
+  border-radius: 99px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.bezel-btn.primary {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+/* 主應用容器 */
+.app-container {
+  width: 100%;
+  height: 100%;
+  background: var(--bg-gradient);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+/* 當開啟 iPad mini 7 外框模擬時：模擬 8.3 吋 1133×744 比例 */
+.device-wrapper.ipad-frame-mode .app-container {
+  width: min(96vw, 1133px);
+  height: min(88vh, 744px);
+  border-radius: 34px;
+  border: 14px solid #1E222B;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65), 0 0 0 2px #475569;
+}
+
+.device-wrapper.ipad-frame-mode.portrait-mode .app-container {
+  width: min(92vw, 744px);
+  height: min(90vh, 1080px);
+}
+
+/* 🌟 頂部導覽列 */
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  border-bottom: 2px solid #FFE4EC;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.brand-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.brand-logo {
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #FF5E7E, #FFBE0B);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  box-shadow: 0 4px 10px rgba(255, 94, 126, 0.3);
+}
+
+.brand-titles h1 {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--text-dark);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.badge-ipad {
+  font-size: 11px;
+  background: linear-gradient(135deg, #3A86FF, #8338EC);
+  color: #FFF;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-weight: 700;
+}
+
+.brand-titles p {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.stats-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stat-pill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 99px;
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: transform 0.15s;
+}
+
+.stat-pill:active {
+  transform: scale(0.95);
+}
+
+.star-pill {
+  background: #FFF9DB;
+  border-color: #FFD43B;
+  color: #D97706;
+}
+
+.art-pill {
+  background: #EBFBEE;
+  border-color: #69DB7C;
+  color: #15803D;
+}
+
+.badge-pill {
+  background: #F3E8FF;
+  border-color: #C084FC;
+  color: #7E22CE;
+}
+
+.quick-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.ctrl-chip {
+  padding: 6px 11px;
+  border-radius: 99px;
+  border: 2px solid #E2E8F0;
+  background: #FFFFFF;
+  color: var(--text-dark);
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.ctrl-chip.active {
+  background: #EEF2FF;
+  border-color: #6366F1;
+  color: #4338CA;
+}
+
+.ctrl-chip.ipad-highlight {
+  background: linear-gradient(135deg, #FF5E7E, #FF9E00);
+  color: #FFFFFF;
+  border: none;
+}
+
+/* 🧭 五大主功能導覽列 */
+.main-nav {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  padding: 6px 16px;
+  background: rgba(255, 255, 255, 0.78);
+  border-bottom: 2px solid #F1F5F9;
+  flex-shrink: 0;
+}
+
+.nav-tab {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 9px 8px;
+  border-radius: 14px;
+  border: 2px solid transparent;
+  background: #FFFFFF;
+  color: var(--text-dark);
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  transition: all 0.18s;
+}
+
+.nav-tab .tab-icon {
+  font-size: 18px;
+}
+
+.nav-tab.active {
+  background: linear-gradient(135deg, #FF5E7E, #FF85A1);
+  color: #FFFFFF;
+  border-color: #FF3B66;
+  box-shadow: 0 5px 14px rgba(255, 94, 126, 0.35);
+  transform: translateY(-1px);
+}
+
+/* 分頁容器 */
+.tab-panel {
+  display: none;
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px 14px;
+}
+
+.tab-panel.active {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ==========================================================================
+   🖌️ 分頁 1：魔法填色畫室三欄式 iPad mini 7 黃金比例佈局
+   ========================================================================== */
+.studio-layout {
+  display: grid;
+  grid-template-columns: 225px 1fr 235px;
+  gap: 12px;
+  height: 100%;
+  min-height: 0;
+}
+
+/* 左撇子鏡像模式 */
+.studio-layout.left-handed {
+  direction: rtl;
+}
+.studio-layout.left-handed > * {
+  direction: ltr;
+}
+
+.tools-sidebar,
+.palette-sidebar {
+  background: #FFFFFF;
+  border-radius: var(--radius-lg);
+  padding: 10px;
+  box-shadow: var(--shadow-soft);
+  border: 2px solid #F1F5F9;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+}
+
+.sidebar-section-title {
+  font-size: 12px;
+  font-weight: 900;
+  color: #64748B;
+  letter-spacing: 0.3px;
+  margin-top: 2px;
+}
+
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+}
+
+.tool-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 8px 4px;
+  border-radius: 14px;
+  border: 2px solid #E2E8F0;
+  background: #F8FAFC;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.tool-btn .t-icon {
+  font-size: 21px;
+}
+
+.tool-btn .t-name {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--text-dark);
+}
+
+.tool-btn.active {
+  background: #FFF0F3;
+  border-color: var(--primary);
+  box-shadow: 0 4px 10px rgba(255, 94, 126, 0.22);
+  transform: scale(1.02);
+}
+
+.brush-size-box {
+  background: #F8FAFC;
+  padding: 7px 10px;
+  border-radius: 12px;
+  border: 1px solid #E2E8F0;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.brush-size-box input[type="range"] {
+  width: 100%;
+  margin-top: 4px;
+  accent-color: var(--primary);
+}
+
+.stamp-drawer {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+  min-height: 75px;
+}
+
+.stamp-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+  max-height: 115px;
+  overflow-y: auto;
+  padding: 4px;
+  background: #F8FAFC;
+  border-radius: 12px;
+  border: 1px solid #E2E8F0;
+}
+
+.stamp-item-btn {
+  font-size: 18px;
+  height: 32px;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background: #FFFFFF;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stamp-item-btn.active {
+  border-color: var(--primary);
+  background: #FFF0F3;
+  transform: scale(1.1);
+}
+
+.action-buttons-stack {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.act-btn {
+  padding: 8px 6px;
+  border-radius: 12px;
+  border: none;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  color: #FFF;
+}
+
+.undo-btn {
+  background: #3B82F6;
+}
+.magic-btn {
+  background: linear-gradient(135deg, #8B5CF6, #EC4899);
+}
+.clear-btn {
+  grid-column: span 2;
+  background: #64748B;
+}
+
+/* 中央畫布舞台區 */
+.canvas-stage-area {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: #FFFFFF;
+  border-radius: var(--radius-lg);
+  padding: 10px 14px;
+  box-shadow: var(--shadow-soft);
+  border: 2px solid #FFE4EC;
+  min-height: 0;
+}
+
+.canvas-top-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-bottom: 8px;
+  border-bottom: 2px dashed #F1F5F9;
+  flex-wrap: wrap;
+}
+
+.template-info-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tpl-emoji {
+  font-size: 30px;
+  background: #FFF5F8;
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #FECDD3;
+}
+
+.template-info-badge h2 {
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.template-info-badge h2 small {
+  font-size: 12px;
+  color: var(--secondary);
+  margin-left: 6px;
+}
+
+.template-info-badge p {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.canvas-stage-Buttons {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.stage-chip {
+  padding: 6px 10px;
+  border-radius: 99px;
+  border: 2px solid #E2E8F0;
+  background: #F8FAFC;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.stage-chip.active {
+  background: #FEF3C7;
+  border-color: #F59E0B;
+  color: #B45309;
+}
+
+.stage-chip.magic-dance {
+  background: linear-gradient(135deg, #A855F7, #EC4899);
+  color: #FFF;
+  border: none;
+}
+
+/* 畫布核心容器 */
+.canvas-frame-outer {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  padding: 6px;
+}
+
+.artboard-container {
+  position: relative;
+  width: min(100%, 430px);
+  aspect-ratio: 1 / 1;
+  background: #FFFFFF;
+  border-radius: 24px;
+  border: 5px solid #FFCAD4;
+  box-shadow: 0 10px 28px rgba(255, 94, 126, 0.16);
+  overflow: hidden;
+  touch-action: none;
+}
+
+/* 魔法復活跳舞動畫 (Toca Boca / Bimi Boo 角色活起來特效) */
+@keyframes characterDance {
+  0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
+  25% { transform: translateY(-10px) rotate(-3deg) scale(1.04); }
+  50% { transform: translateY(0) rotate(0deg) scale(0.98); }
+  75% { transform: translateY(-8px) rotate(3deg) scale(1.04); }
+}
+
+.artboard-container.alive-dancing .character-group {
+  transform-origin: 250px 260px;
+  animation: characterDance 1.1s infinite ease-in-out;
+}
+
+.svg-template-holder {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.svg-template-holder svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.svg-template-holder .color-zone {
+  cursor: pointer;
+  transition: fill 0.18s ease, filter 0.15s ease;
+}
+
+.svg-template-holder .color-zone:hover {
+  filter: brightness(0.96);
+}
+
+/* 數字密碼浮層 */
+.number-guide-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.number-guide-overlay.hidden {
+  display: none;
+}
+
+.num-badge-dot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid #2C3E50;
+  color: #2C3E50;
+  font-size: 12px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.18);
+}
+
+/* 上層手繪與貼紙 Canvas */
+.drawing-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 5;
+  touch-action: none;
+}
+
+/* 當使用「點一下填色桶」時，讓點擊穿透至底層 SVG 分區 */
+.drawing-canvas.pass-through {
+  pointer-events: none;
+}
+
+.canvas-bottom-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 2px dashed #F1F5F9;
+}
+
+.bottom-nav-btn {
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 2px solid #CBD5E1;
+  background: #F8FAFC;
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.bottom-nav-btn.pick-btn {
+  background: #EFF6FF;
+  border-color: #93C5FD;
+  color: #1D4ED8;
+}
+
+.bottom-save-btn {
+  padding: 9px 16px;
+  border-radius: 14px;
+  border: none;
+  background: linear-gradient(135deg, #10B981, #059669);
+  color: #FFFFFF;
+  font-weight: 900;
+  font-size: 13px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+/* 右側：24色兒童美學色盤 + 6款漸層漆 */
+.current-color-preview {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  background: #F8FAFC;
+  border-radius: 14px;
+  border: 2px solid #E2E8F0;
+}
+
+.active-swatch {
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  border: 3px solid #2C3E50;
+  flex-shrink: 0;
+}
+
+.active-color-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.meta-label {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.palette-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+}
+
+.color-swatch-btn {
+  height: 36px;
+  border-radius: 11px;
+  border: 2.5px solid rgba(44, 62, 80, 0.2);
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s;
+  position: relative;
+}
+
+.color-swatch-btn.active {
+  transform: scale(1.12);
+  border-color: #2C3E50;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.22);
+  z-index: 2;
+}
+
+.gradient-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+}
+
+.gradient-swatch-btn {
+  padding: 7px 6px;
+  border-radius: 10px;
+  border: 2px solid rgba(44, 62, 80, 0.2);
+  color: #FFFFFF;
+  font-size: 11px;
+  font-weight: 900;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+  cursor: pointer;
+}
+
+.gradient-swatch-btn.active {
+  border-color: #2C3E50;
+  transform: scale(1.04);
+}
+
+/* ==========================================================================
+   📚 分頁 2：54款塗鴉公版庫
+   ========================================================================== */
+.panel-header-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #FFFFFF;
+  padding: 14px 18px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  margin-bottom: 12px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.panel-header-card h2 {
+  font-size: 19px;
+  font-weight: 900;
+}
+
+.panel-header-card p {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 3px;
+}
+
+.primary-pill-btn {
+  padding: 10px 18px;
+  border-radius: 99px;
+  border: none;
+  background: linear-gradient(135deg, #FF5E7E, #FF9E00);
+  color: #FFFFFF;
+  font-weight: 900;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(255, 94, 126, 0.3);
+}
+
+.secondary-pill-btn {
+  padding: 10px 16px;
+  border-radius: 99px;
+  border: 2px solid #CBD5E1;
+  background: #FFFFFF;
+  color: var(--text-dark);
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.category-filter-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.cat-pill-btn {
+  padding: 8px 14px;
+  border-radius: 99px;
+  border: 2px solid #E2E8F0;
+  background: #FFFFFF;
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.cat-pill-btn.active {
+  background: var(--secondary);
+  color: #FFFFFF;
+  border-color: var(--secondary);
+}
+
+.templates-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+  gap: 12px;
+  padding-bottom: 24px;
+}
+
+.tpl-card {
+  background: #FFFFFF;
+  border-radius: 18px;
+  padding: 10px;
+  border: 2px solid #E2E8F0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  cursor: pointer;
+  transition: transform 0.18s, border-color 0.18s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.tpl-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--primary);
+}
+
+.tpl-thumb-box {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: #FFF9FB;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 8px;
+  border: 1px solid #FCE7F3;
+}
+
+.tpl-thumb-box svg {
+  width: 100%;
+  height: 100%;
+}
+
+.tpl-card-title {
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.tpl-card-en {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+/* ==========================================================================
+   🎮 分頁 3：5大創意藝術與色彩益智小遊戲樂園
+   ========================================================================== */
+.games-selector-bar {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-shrink: 0;
+}
+
+.game-tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 16px;
+  border: 2px solid #E2E8F0;
+  background: #FFFFFF;
+  cursor: pointer;
+  text-align: left;
+}
+
+.game-tab-btn span {
+  font-size: 24px;
+}
+
+.game-tab-btn strong {
+  display: block;
+  font-size: 13px;
+  color: var(--text-dark);
+}
+
+.game-tab-btn small {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.game-tab-btn.active {
+  background: #EEF2FF;
+  border-color: #6366F1;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+}
+
+.minigame-stage {
+  display: none;
+  flex: 1;
+  min-height: 0;
+}
+
+.minigame-stage.active {
+  display: flex;
+  flex-direction: column;
+}
+
+.minigame-split {
+  display: grid;
+  grid-template-columns: 1fr 460px;
+  gap: 16px;
+  background: #FFFFFF;
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  flex: 1;
+  align-items: center;
+}
+
+.mg-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.mg-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.chip-group, .mg-controls {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.mg-chip {
+  padding: 7px 12px;
+  border-radius: 99px;
+  border: 2px solid #CBD5E1;
+  background: #F8FAFC;
+  font-weight: 800;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.mg-chip.active {
+  background: var(--primary);
+  color: #FFF;
+  border-color: var(--primary);
+}
+
+/* 數字填色色球列 */
+.num-game-palette {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin: 12px 0;
+}
+
+.num-ball-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 14px;
+  border: 3px solid rgba(0,0,0,0.15);
+  color: #FFF;
+  font-weight: 900;
+  font-size: 16px;
+  cursor: pointer;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.45);
+}
+
+.num-ball-btn.active {
+  transform: scale(1.06);
+  border-color: #2C3E50;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+}
+
+.num-progress-box {
+  background: #F8FAFC;
+  padding: 10px 14px;
+  border-radius: 14px;
+  border: 1px solid #E2E8F0;
+  font-size: 13px;
+}
+
+.progress-bar-bg {
+  width: 100%;
+  height: 12px;
+  background: #E2E8F0;
+  border-radius: 99px;
+  overflow: hidden;
+  margin-top: 6px;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #34D399, #10B981);
+  transition: width 0.25s ease;
+}
+
+.mg-right-board {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.num-game-svg-board {
+  position: relative;
+  width: 420px;
+  height: 420px;
+  border-radius: 20px;
+  border: 4px solid #CBD5E1;
+  overflow: hidden;
+  background: #FFF;
+}
+
+/* 萬花筒畫布 */
+.mandala-canvas {
+  width: 420px;
+  height: 420px;
+  background: radial-gradient(circle at center, #1E1B4B 0%, #0F172A 100%);
+  border-radius: 22px;
+  border: 4px solid #6366F1;
+  box-shadow: 0 0 24px rgba(99, 102, 241, 0.35);
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.mandala-color-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.mini-color-dot {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 3px solid rgba(255,255,255,0.6);
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.mini-color-dot.active {
+  transform: scale(1.18);
+  border-color: #2C3E50;
+}
+
+/* 像素拼豆 12x12 網格 */
+.pixel-grid-board {
+  width: 410px;
+  height: 410px;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(12, 1fr);
+  gap: 3px;
+  padding: 10px;
+  background: #CBD5E1;
+  border-radius: 18px;
+  touch-action: none;
+}
+
+.pixel-cell {
+  background: #FFFFFF;
+  border-radius: 5px;
+  cursor: pointer;
+  box-shadow: inset 0 -2px 0 rgba(0,0,0,0.08);
+}
+
+/* 色彩魔法調色實驗室 */
+.mixer-card-container {
+  background: #FFFFFF;
+  border-radius: var(--radius-lg);
+  padding: 20px;
+  box-shadow: var(--shadow-soft);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.mixer-quest-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #FFFBEB;
+  padding: 14px 18px;
+  border-radius: 16px;
+  border: 2px solid #FDE68A;
+  gap: 12px;
+}
+
+.quest-owl {
+  font-size: 38px;
+}
+
+.mixer-score-badge {
+  background: #FEF3C7;
+  padding: 8px 14px;
+  border-radius: 99px;
+  font-weight: 900;
+  color: #B45309;
+}
+
+.mixer-lab-arena {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  padding: 10px;
+}
+
+.mixer-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  background: #F8FAFC;
+  padding: 18px 28px;
+  border-radius: 20px;
+  border: 2px solid #E2E8F0;
+}
+
+.potion-cup {
+  width: 110px;
+  height: 110px;
+  border-radius: 28px;
+  border: 4px solid #2C3E50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 44px;
+  box-shadow: inset 0 -10px 0 rgba(0,0,0,0.12);
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.potion-cup.empty-cup {
+  background: #E2E8F0;
+}
+
+.mixer-plus {
+  font-size: 36px;
+}
+
+.base-paints-row {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.paint-bottle-btn {
+  padding: 12px 20px;
+  border-radius: 16px;
+  border: 3px solid #2C3E50;
+  background: var(--bottle-color, #FF3B30);
+  color: #FFFFFF;
+  font-weight: 900;
+  font-size: 15px;
+  cursor: pointer;
+  box-shadow: 0 5px 0 rgba(44, 62, 80, 0.22);
+}
+
+.paint-bottle-btn.reset-bottle {
+  background: #64748B;
+}
+
+/* 彩虹刮刮畫 */
+.scratch-board-wrap {
+  position: relative;
+  width: 420px;
+  height: 420px;
+  border-radius: 22px;
+  overflow: hidden;
+  border: 4px solid #F59E0B;
+}
+
+.scratch-underlay {
+  position: absolute;
+  inset: 0;
+  background: conic-gradient(from 0deg, #FF5E7E, #FFBE0B, #06D6A0, #3A86FF, #8338EC, #FF5E7E);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scratch-underlay svg {
+  width: 90%;
+  height: 90%;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.35));
+}
+
+.scratch-overlay-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  touch-action: none;
+}
+
+/* ==========================================================================
+   🏛️ 分頁 4 & 5：我的美術館、家長五維度報告與全球十大APP總結
+   ========================================================================== */
+.gallery-top-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.parent-report-card,
+.ipad-guide-card {
+  background: #FFFFFF;
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+}
+
+.parent-report-card h3,
+.ipad-guide-card h3 {
+  font-size: 16px;
+  font-weight: 900;
+  margin-bottom: 6px;
+}
+
+.parent-report-card p {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.skill-bars-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skill-row {
+  display: grid;
+  grid-template-columns: 145px 1fr 42px;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.s-bar {
+  height: 10px;
+  background: #F1F5F9;
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.s-fill {
+  height: 100%;
+  border-radius: 99px;
+}
+
+.ipad-steps {
+  padding-left: 18px;
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--text-dark);
+}
+
+.ipad-steps li {
+  margin-bottom: 6px;
+}
+
+.section-subtitle {
+  font-size: 17px;
+  font-weight: 900;
+  margin-bottom: 10px;
+}
+
+.saved-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 14px;
+  padding-bottom: 24px;
+}
+
+.framed-art-card {
+  background: #FFFFFF;
+  border-radius: 18px;
+  padding: 12px;
+  border: 6px solid #F59E0B;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.framed-art-card img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  background: #FFFFFF;
+  border-radius: 10px;
+  border: 2px solid #FEF3C7;
+}
+
+/* 十大 APP 卡片 */
+.top10-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 14px;
+  padding-bottom: 28px;
+}
+
+.app-review-card {
+  background: #FFFFFF;
+  border-radius: 18px;
+  padding: 16px;
+  border: 2px solid #E2E8F0;
+  box-shadow: var(--shadow-soft);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.app-rank-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rank-badge {
+  background: linear-gradient(135deg, #FF5E7E, #FF9E00);
+  color: #FFF;
+  font-weight: 900;
+  padding: 4px 10px;
+  border-radius: 99px;
+  font-size: 12px;
+}
+
+.app-origin {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.app-box-point {
+  font-size: 12.5px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  line-height: 1.45;
+}
+
+.app-box-point.pro {
+  background: #F0FDF4;
+  color: #166534;
+}
+
+.app-box-point.con {
+  background: #FEF2F2;
+  color: #991B1B;
+}
+
+.app-box-point.our {
+  background: #EFF6FF;
+  color: #1E40AF;
+  font-weight: 700;
+  border: 1px solid #BFDBFE;
+}
+
+/* 榮譽獎狀彈窗 */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9000;
+  padding: 16px;
+}
+
+.modal-backdrop.hidden {
+  display: none;
+}
+
+.certificate-dialog {
+  background: #FFFBEB;
+  max-width: 520px;
+  width: 100%;
+  border-radius: 26px;
+  padding: 14px;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.4);
+}
+
+.cert-border {
+  border: 5px double #D97706;
+  border-radius: 18px;
+  padding: 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cert-ribbon {
+  font-size: 14px;
+  font-weight: 900;
+  color: #B45309;
+}
+
+.cert-body {
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.cert-seal {
+  font-size: 32px;
+  color: #D97706;
+  margin: 4px 0;
+}
+
+/* 📱 響應式：針對 iPad 直向或小尺寸螢幕自動調整 */
+@media (max-width: 960px) {
+  .studio-layout {
+    grid-template-columns: 1fr;
+    overflow-y: auto;
+  }
+  .minigame-split,
+  .gallery-top-grid {
+    grid-template-columns: 1fr;
+  }
+  .games-selector-bar {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
