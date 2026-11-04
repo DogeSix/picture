@@ -1,11 +1,6 @@
 /**
  * 🎨 彩虹魔法畫布 Rainbow Magic Canvas Pro - 主互動核心與5大創意藝術小遊戲引擎
- * 支援：
- * 1. SVG 智慧分區填色 + Stay-Inside-the-Lines 防出界鎖定塗刷 + 自由手繪雙層合成
- * 2. 8大魔法畫筆工具 (水桶填色、防出界塗刷、粉彩蠟筆、渲染水彩、夜光霓虹、七彩彩虹筆、40款Q彈貼紙章、橡皮擦)
- * 3. 54款精細公版庫切換、雙語語音故事、數字密碼浮層、魔法復活跳舞動畫
- * 4. 5大創意小遊戲：數字與算式密碼填色、萬花筒對稱光繪、12x12像素拼豆、三原色調色實驗室、彩虹魔術刮刮畫
- * 5. 雙層合成高清 PNG 圖檔匯出、美術館畫廊與家長五維度美感報告
+ * (iPad mini 7 平板瀏覽器完美適配版：含 visualViewport 動態高度偵測 + ResizeObserver 畫布自適應縮放)
  */
 
 class RainbowArtApp {
@@ -17,7 +12,7 @@ class RainbowArtApp {
     this.activeColor = window.COLOR_PALETTE[0].hex;
     this.activeColorName = window.COLOR_PALETTE[0].name;
     this.activeColorNote = 0;
-    this.activeGradientId = null; // 若選取魔術漸層漆
+    this.activeGradientId = null;
     this.brushSize = 20;
     this.activeStamp = window.STAMP_LIBRARY[0];
     this.rainbowHue = 0;
@@ -33,16 +28,17 @@ class RainbowArtApp {
     this.numberGuideVisible = false;
     this.aliveDancing = false;
 
-    // 玩家統計與儲存資料
+    // 玩家統計與平板適配狀態
     this.stars = 30;
     this.galleryWorks = [];
     this.leftHanded = false;
     this.ipadFrameMode = false;
     this.portraitMode = false;
+    this.simSafariBar = true; // 預設開啟模擬 Safari 頂部網址列以驗證不遮擋
 
     // 小遊戲狀態
     this.currentMiniGame = 'number';
-    this.numGameMode = 'number'; // 'number' or 'math'
+    this.numGameMode = 'number';
     this.numGameTplIdx = 0;
     this.numGameSelectedNum = 1;
     this.mandalaAxes = 8;
@@ -58,6 +54,9 @@ class RainbowArtApp {
     this.loadSavedState();
     this.canvas = document.getElementById('drawingCanvas');
     this.ctx = this.canvas.getContext('2d');
+
+    // 📱 啟動 iPad Safari 動態可視高度 (visualViewport) 與畫布自適應引擎
+    this.setupTabletViewportEngine();
 
     this.renderPaletteSidebar();
     this.renderStampSelector();
@@ -77,6 +76,64 @@ class RainbowArtApp {
     this.initScratchMiniGame();
 
     this.updateStatsUI();
+  }
+
+  /**
+   * 📱 核心平板瀏覽器優化引擎：
+   * 1. 即時監聽 window.visualViewport 與 resize，扣掉 iPad Safari 頂部網址列/書籤列與底部工具列，設定精確的 --app-height
+   * 2. 使用 ResizeObserver 動態測量中央畫布區 (canvasFrameOuter) 的可用寬高，自動設定正方形畫布邊長 (--board-size)，
+   *    確保底部「上一張 / 選公版 / 下一張 / 裝裱收藏」按鈕永遠 100% 完整呈現在螢幕內，絕不被蓋住！
+   */
+  setupTabletViewportEngine() {
+    const updateViewportVars = () => {
+      const vvHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      document.documentElement.style.setProperty('--app-height', `${Math.floor(vvHeight)}px`);
+      this.recalcBoardSize();
+    };
+
+    window.addEventListener('resize', updateViewportVars);
+    window.addEventListener('orientationchange', () => setTimeout(updateViewportVars, 150));
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', updateViewportVars);
+      window.visualViewport.addEventListener('scroll', updateViewportVars);
+    }
+
+    const outer = document.getElementById('canvasFrameOuter');
+    if (outer && 'ResizeObserver' in window) {
+      const ro = new ResizeObserver(() => this.recalcBoardSize());
+      ro.observe(outer);
+    }
+
+    updateViewportVars();
+  }
+
+  recalcBoardSize() {
+    const outer = document.getElementById('canvasFrameOuter');
+    const board = document.getElementById('artboardContainer');
+    if (!outer || !board) return;
+
+    const rect = outer.getBoundingClientRect();
+    if (rect.width > 40 && rect.height > 40) {
+      // 取可用寬高的最小值再預留 10px 邊距，讓正方形畫布完美嵌入中央舞台而不擠壓底欄
+      const size = Math.max(210, Math.min(rect.width - 12, rect.height - 8, 450));
+      board.style.setProperty('--board-size', `${Math.floor(size)}px`);
+    }
+  }
+
+  // 一鍵請求平板全螢幕模式（或提示 Safari 加入主畫面）
+  requestTabletFullscreen() {
+    const docEl = document.documentElement;
+    const req = docEl.requestFullscreen || docEl.webkitRequestFullscreen;
+    if (!document.fullscreenElement && !document.webkitFullscreenElement && req) {
+      req.call(docEl).catch(() => {
+        window.soundEngine.speak('在 iPad Safari 瀏覽器中，您可以點擊頂部分享按鈕，選擇「加入主畫面」，就能隱藏網址列享受全螢幕喔！');
+      });
+    } else if (document.exitFullscreen || document.webkitExitFullscreen) {
+      const exit = document.exitFullscreen || document.webkitExitFullscreen;
+      exit.call(document).catch(() => {});
+    } else {
+      window.soundEngine.speak('在 iPad Safari 瀏覽器中，您可以點擊頂部分享按鈕，選擇「加入主畫面」，就能隱藏網址列享受全螢幕喔！');
+    }
   }
 
   loadSavedState() {
@@ -99,7 +156,8 @@ class RainbowArtApp {
   updateStatsUI() {
     document.getElementById('statStars').textContent = this.stars;
     document.getElementById('statWorks').textContent = this.galleryWorks.length;
-    document.getElementById('galleryCountLabel').textContent = this.galleryWorks.length;
+    const gLabel = document.getElementById('galleryCountLabel');
+    if (gLabel) gLabel.textContent = this.galleryWorks.length;
   }
 
   addStars(amount, reasonText = '') {
@@ -122,6 +180,9 @@ class RainbowArtApp {
     document.querySelectorAll('.tab-panel').forEach(panel => {
       panel.classList.toggle('active', panel.id === `tab-${tabId}`);
     });
+    if (tabId === 'studio') {
+      setTimeout(() => this.recalcBoardSize(), 30);
+    }
     window.soundEngine.playColorNote(3);
   }
 
@@ -150,7 +211,7 @@ class RainbowArtApp {
     document.getElementById('studioLayout').classList.toggle('left-handed', this.leftHanded);
     const btn = document.getElementById('btnHand');
     btn.classList.toggle('active', this.leftHanded);
-    btn.textContent = this.leftHanded ? '🤚 左手版面' : '🤚 右手版面';
+    btn.textContent = this.leftHanded ? '🤚 左手' : '🤚 右手';
     window.soundEngine.playColorNote(5);
   }
 
@@ -158,12 +219,24 @@ class RainbowArtApp {
     this.ipadFrameMode = typeof forceState === 'boolean' ? forceState : !this.ipadFrameMode;
     const wrapper = document.getElementById('deviceWrapper');
     wrapper.classList.toggle('ipad-frame-mode', this.ipadFrameMode);
+    wrapper.classList.toggle('sim-safari-bar', this.ipadFrameMode && this.simSafariBar);
     document.getElementById('btnIpadMode').classList.toggle('active', this.ipadFrameMode);
+    setTimeout(() => this.recalcBoardSize(), 60);
+  }
+
+  toggleSafariBarSim() {
+    this.simSafariBar = !this.simSafariBar;
+    const wrapper = document.getElementById('deviceWrapper');
+    wrapper.classList.toggle('sim-safari-bar', this.ipadFrameMode && this.simSafariBar);
+    const btn = document.getElementById('btnSimSafariBar');
+    if (btn) btn.classList.toggle('active', this.simSafariBar);
+    setTimeout(() => this.recalcBoardSize(), 60);
   }
 
   toggleOrientation() {
     this.portraitMode = !this.portraitMode;
     document.getElementById('deviceWrapper').classList.toggle('portrait-mode', this.portraitMode);
+    setTimeout(() => this.recalcBoardSize(), 60);
   }
 
   // ==================== 色盤、漸層漆與印章選擇器 ====================
@@ -200,7 +273,6 @@ class RainbowArtApp {
     swatch.style.background = hex;
     document.getElementById('activeColorName').textContent = `${name}`;
 
-    // 若原本在橡皮擦，自動切回水桶或畫筆
     if (this.activeTool === 'eraser') {
       this.selectTool('bucket');
     }
@@ -220,7 +292,6 @@ class RainbowArtApp {
     swatch.style.background = `linear-gradient(135deg, ${gradObj.stops.join(',')})`;
     document.getElementById('activeColorName').textContent = name;
 
-    // 選取魔術漸層漆時，自動切換為「點一下填色」最直覺
     this.selectTool('bucket');
     window.soundEngine.playSparkle();
   }
@@ -247,7 +318,6 @@ class RainbowArtApp {
       btn.classList.toggle('active', btn.dataset.tool === toolName);
     });
 
-    // 當工具為 bucket (點一下填色) 時，讓上層 drawingCanvas 點擊穿透至底層 SVG
     if (toolName === 'bucket' && !this.isBlankMode) {
       this.canvas.classList.add('pass-through');
     } else {
@@ -275,7 +345,6 @@ class RainbowArtApp {
     const holder = document.getElementById('svgTemplateHolder');
     holder.innerHTML = tpl.svg;
 
-    // 綁定 SVG 每個 .color-zone 的點擊智慧填色事件
     holder.querySelectorAll('.color-zone').forEach(zone => {
       zone.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -286,11 +355,11 @@ class RainbowArtApp {
       });
     });
 
-    // 清空上層手繪畫布與歷史
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.undoStack = [];
     this.renderNumberGuideBadges();
     this.selectTool(this.activeTool);
+    setTimeout(() => this.recalcBoardSize(), 20);
   }
 
   loadBlankCanvas() {
@@ -338,7 +407,7 @@ class RainbowArtApp {
     window.soundEngine.speak(`${tpl.title}，英文叫做 ${tpl.en}。${tpl.fact}`);
   }
 
-  // 數字密碼提示浮層 (Happy Color 玩法)
+  // 數字密碼提示浮層
   toggleNumberGuide() {
     if (this.isBlankMode) return;
     this.numberGuideVisible = !this.numberGuideVisible;
@@ -369,7 +438,6 @@ class RainbowArtApp {
     overlay.innerHTML = html;
   }
 
-  // 魔法復活跳舞動畫
   toggleAliveAnimation() {
     this.aliveDancing = !this.aliveDancing;
     document.getElementById('artboardContainer').classList.toggle('alive-dancing', this.aliveDancing);
@@ -380,7 +448,6 @@ class RainbowArtApp {
     }
   }
 
-  // 🪄 魔術棒一鍵智慧七彩配色
   autoRainbowFill() {
     this.pushUndoState();
     const zones = document.querySelectorAll('#svgTemplateHolder .color-zone');
@@ -391,9 +458,9 @@ class RainbowArtApp {
     ];
     zones.forEach((z, idx) => {
       if (idx === 0) {
-        z.setAttribute('fill', '#E0F7FA'); // 天空淺藍
+        z.setAttribute('fill', '#E0F7FA');
       } else if (idx === 1) {
-        z.setAttribute('fill', '#A8E6CF'); // 草地海洋嫩綠
+        z.setAttribute('fill', '#A8E6CF');
       } else {
         const pick = niceColors[(idx * 3 + Math.floor(Math.random() * 5)) % niceColors.length];
         z.setAttribute('fill', pick);
@@ -422,7 +489,6 @@ class RainbowArtApp {
       const pos = getPos(e);
       this.pushUndoState();
 
-      // 若是貼紙印章，點一下即蓋章並播放 Q 彈音效
       if (this.activeTool === 'stamp') {
         this.ctx.save();
         this.ctx.font = `${this.brushSize * 1.9}px "Apple Color Emoji", "Segoe UI Emoji", sans-serif`;
@@ -438,7 +504,6 @@ class RainbowArtApp {
       this.lastX = pos.x;
       this.lastY = pos.y;
 
-      // 🛡️ Lake Coloring Books 核心技術：若選取「防出界塗刷 (smartbrush)」，偵測起筆點所在的 SVG 分區並建立剪裁遮罩
       this.lockedClipPath = null;
       if (this.activeTool === 'smartbrush' && !this.isBlankMode) {
         this.canvas.style.pointerEvents = 'none';
@@ -475,7 +540,6 @@ class RainbowArtApp {
     window.addEventListener('touchend', endDraw);
   }
 
-  // 將 SVG 基本幾何圖形轉換為 Canvas Path2D，實現 100% 鎖定邊界防出界塗刷
   svgElementToPath2D(el) {
     try {
       const tag = el.tagName.toLowerCase();
@@ -645,8 +709,8 @@ class RainbowArtApp {
     const grid = document.getElementById('savedGalleryGrid');
     if (this.galleryWorks.length === 0) {
       grid.innerHTML = `
-        <div class="framed-art-card" style="grid-column: 1 / -1; padding: 28px;">
-          <p style="font-size:15px;font-weight:800;color:#64748B;">🎨 目前美術館還沒有掛上畫作喔！快去「魔法填色畫室」或「5大藝術小遊戲」完成作品並點擊【📸 裝裱收藏】吧！</p>
+        <div class="framed-art-card" style="grid-column: 1 / -1; padding: 24px;">
+          <p style="font-size:14px;font-weight:800;color:#64748B;">🎨 目前美術館還沒有掛上畫作喔！快去「魔法畫室」或「5大小遊戲」完成作品並點擊【📸 裝裱收藏】吧！</p>
         </div>
       `;
       return;
@@ -658,8 +722,8 @@ class RainbowArtApp {
         <strong>👑 ${w.title}</strong>
         <small style="color:#64748B;">創作日期：${w.date}</small>
         <div style="display:flex;gap:6px;width:100%;margin-top:4px;">
-          <a href="${w.dataUrl}" download="彩虹魔法畫布_${w.title}.png" class="primary-pill-btn" style="flex:1;text-align:center;text-decoration:none;font-size:12px;padding:7px;">💾 下載 PNG</a>
-          <button class="secondary-pill-btn" style="padding:7px 10px;font-size:12px;" onclick="app.deleteGalleryWork(${idx})">🗑️</button>
+          <a href="${w.dataUrl}" download="彩虹魔法畫布_${w.title}.png" class="primary-pill-btn" style="flex:1;text-align:center;text-decoration:none;font-size:12px;padding:6px;">💾 下載 PNG</a>
+          <button class="secondary-pill-btn" style="padding:6px 10px;font-size:12px;" onclick="app.deleteGalleryWork(${idx})">🗑️</button>
         </div>
       </div>
     `).join('');
@@ -797,7 +861,7 @@ class RainbowArtApp {
         badge.dataset.badgeZone = zIdx;
         badge.style.left = `${(Number(cx) / 500) * 100}%`;
         badge.style.top = `${(Number(cy) / 500) * 100}%`;
-        badge.style.width = this.numGameMode === 'math' ? '38px' : '26px';
+        badge.style.width = this.numGameMode === 'math' ? '36px' : '24px';
         badge.style.borderRadius = '99px';
         badge.textContent = this.numGameMode === 'math' ? mathClues[targetNum] : targetNum;
         board.appendChild(badge);
@@ -924,7 +988,6 @@ class RainbowArtApp {
       ctx.lineTo(x2 - cx, y2 - cy);
       ctx.stroke();
 
-      // 鏡像反射軸
       ctx.scale(1, -1);
       ctx.beginPath();
       ctx.moveTo(x1 - cx, y1 - cy);
@@ -973,7 +1036,11 @@ class RainbowArtApp {
     window.soundEngine.playColorNote(4);
   }
 
-  loadPixelPreset(type) {
+  loadPixelPreset(type, btnEl) {
+    if (btnEl && btnEl.parentElement) {
+      btnEl.parentElement.querySelectorAll('.mg-chip').forEach(b => b.classList.remove('active'));
+      btnEl.classList.add('active');
+    }
     const presets = {
       heart: [
         "............",
@@ -1133,7 +1200,7 @@ class RainbowArtApp {
         setTimeout(() => {
           this.mixerQuestIndex++;
           this.loadMixerQuest();
-        }, 2000);
+        }, 1800);
       } else {
         resCup.style.background = '#795548';
         resCup.textContent = '🫧';
@@ -1185,9 +1252,13 @@ class RainbowArtApp {
     window.addEventListener('touchend', () => { scratching = false; });
   }
 
-  initScratchCard(presetIdx) {
+  initScratchCard(presetIdx, btnEl) {
+    if (btnEl && btnEl.parentElement) {
+      btnEl.parentElement.querySelectorAll('.mg-chip').forEach(b => b.classList.remove('active'));
+      btnEl.classList.add('active');
+    }
     if (typeof presetIdx === 'number') this.scratchCurrentIdx = presetIdx;
-    const tplIndices = [45, 9, 27]; // 獨角獸、暴龍、太空火箭
+    const tplIndices = [45, 9, 27];
     const tpl = window.TEMPLATES_DB[tplIndices[this.scratchCurrentIdx % tplIndices.length]];
     document.getElementById('scratchUnderlay').innerHTML = tpl.svg;
 
@@ -1197,9 +1268,8 @@ class RainbowArtApp {
     ctx.fillStyle = '#1E293B';
     ctx.fillRect(0, 0, sCanvas.width, sCanvas.height);
 
-    // 畫上閃亮提示文字
     ctx.fillStyle = '#94A3B8';
-    ctx.font = 'bold 20px sans-serif';
+    ctx.font = 'bold 18px sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText('✨ 用手指或畫筆刮開黑色魔法塗層 ✨', 220, 220);
 
@@ -1239,7 +1309,7 @@ class RainbowArtApp {
           <span class="rank-badge">TOP ${appItem.rank}</span>
           <span class="app-origin">${appItem.origin}</span>
         </div>
-        <h3 style="font-size:16px;font-weight:900;">${appItem.name}</h3>
+        <h3 style="font-size:15px;font-weight:900;">${appItem.name}</h3>
         <small style="color:#6366F1;font-weight:800;">📊 ${appItem.downloads}</small>
         <div class="app-box-point pro"><strong>👍 核心強項：</strong>${appItem.coreStrengths}</div>
         <div class="app-box-point con"><strong>⚠️ 常見痛點：</strong>${appItem.painPoints}</div>

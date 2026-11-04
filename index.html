@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="彩虹魔法畫布" />
   <meta name="theme-color" content="#FF5E7E" />
-  <title>🎨 彩虹魔法畫布 Rainbow Magic Canvas Pro｜國小兒童填色畫圖＆5大創意藝術小遊戲 (iPad mini 7 旗艦版)</title>
+  <title>🎨 彩虹魔法畫布 Rainbow Magic Canvas Pro｜國小兒童填色畫圖＆5大創意藝術小遊戲 (iPad mini 7 平板瀏覽器完美適配版)</title>
   <link rel="manifest" href="manifest.json" />
   <link rel="stylesheet" href="styles.css" />
 </head>
@@ -15,96 +15,106 @@
   <!-- 🎉 全螢幕煙火與星星慶祝特效 Canvas -->
   <canvas id="confettiCanvas" class="confetti-canvas"></canvas>
 
-  <!-- 📱 iPad mini 7 (8.3吋 Liquid Retina・2266×1488) 實機比例預覽外框與全螢幕切換容器 -->
+  <!-- 📱 iPad mini 7 (8.3吋 Liquid Retina・含 Safari 頂部網址列模擬) 外框與滿版切換容器 -->
   <div id="deviceWrapper" class="device-wrapper">
+    <!-- 電腦預覽專用控制列 -->
     <div class="ipad-bezel-header">
       <span class="camera-dot"></span>
-      <span class="bezel-label">📱 Apple iPad mini 7 (A17 Pro・8.3" Liquid Retina・支援 Apple Pencil Pro 觸控最佳化)</span>
+      <span class="bezel-label">📱 iPad mini 7 實機預覽 (8.3" 1133×744)</span>
+      <button id="btnSimSafariBar" class="bezel-btn active" onclick="app.toggleSafariBarSim()">🌐 模擬 Safari 頂部網址列 (實測不遮擋)</button>
       <button class="bezel-btn" onclick="app.toggleOrientation()">🔄 橫向 / 直向旋轉</button>
-      <button class="bezel-btn primary" onclick="app.toggleIpadFrame(false)">⛶ 切換全螢幕滿版</button>
+      <button class="bezel-btn primary" onclick="app.toggleIpadFrame(false)">⛶ 返回全螢幕滿版</button>
     </div>
 
     <div id="appContainer" class="app-container">
-      <!-- 🌟 頂部學童友善導覽與狀態列 -->
+      <!-- 🌐 模擬 iPad Safari 頂部狀態列＋網址分頁列 (僅在開啟「iPad 外框預覽」且勾選模擬時顯示，用來驗證下方按鈕絕不被蓋住) -->
+      <div id="safariMockBar" class="safari-mock-bar">
+        <div class="safari-status-row">
+          <span>9:41 AM Thu Nov 4</span>
+          <span>iPad mini 7 5G 🔋 100%</span>
+        </div>
+        <div class="safari-address-row">
+          <span class="safari-nav-icons">◀ ▶ 📖</span>
+          <div class="safari-url-box">🔒 rainbow-magic-canvas.local/index.html — 彩虹魔法畫布 iPad 旗艦版</div>
+          <span class="safari-nav-icons">📤 ➕ ⧉</span>
+        </div>
+      </div>
+
+      <!-- 🌟 超精簡一體化頂部導覽列 (Unified Compact Header - 僅 48px 高，把寶貴高度全部留給畫布與底部按鈕！) -->
       <header class="top-bar">
-        <div class="brand-group" onclick="app.switchTab('studio')">
+        <div class="brand-group" onclick="app.switchTab('studio')" title="點擊返回魔法填色畫室">
           <div class="brand-logo">🎨</div>
           <div class="brand-titles">
-            <h1>彩虹魔法畫布 <span class="badge-ipad">iPad mini 7 旗艦版</span></h1>
-            <p>融合全球十大兒童塗鴉APP精髓 × 54款智慧防出界公版 × 5大創意小遊戲</p>
+            <h1>彩虹魔法畫布 <span class="badge-ipad">iPad mini 7</span></h1>
           </div>
         </div>
 
-        <!-- 🏆 彩虹星星、創作勳章與已完成畫作統計 -->
-        <div class="stats-bar">
-          <div class="stat-pill star-pill" title="塗色與玩小遊戲獲得的彩虹星星">
+        <!-- 🧭 五大核心功能主選單 (直接整合於頂部列，省去第二排導覽列高度！) -->
+        <nav class="main-nav" aria-label="主要功能選單">
+          <button class="nav-tab active" data-tab="studio" onclick="app.switchTab('studio')">
+            <span class="tab-icon">🖌️</span>
+            <span class="tab-label">魔法畫室</span>
+          </button>
+          <button class="nav-tab" data-tab="templates" onclick="app.switchTab('templates')">
+            <span class="tab-icon">📚</span>
+            <span class="tab-label">54款公版</span>
+          </button>
+          <button class="nav-tab" data-tab="games" onclick="app.switchTab('games')">
+            <span class="tab-icon">🎮</span>
+            <span class="tab-label">5大小遊戲</span>
+          </button>
+          <button class="nav-tab" data-tab="gallery" onclick="app.switchTab('gallery')">
+            <span class="tab-icon">🏛️</span>
+            <span class="tab-label">美術館(<strong id="statWorks">0</strong>)</span>
+          </button>
+          <button class="nav-tab" data-tab="top10" onclick="app.switchTab('top10')">
+            <span class="tab-icon">🏆</span>
+            <span class="tab-label">十大APP</span>
+          </button>
+        </nav>
+
+        <!-- 🎛️ 星星、聲音、左右手與全螢幕控制 -->
+        <div class="quick-controls">
+          <div class="stat-pill star-pill" onclick="app.openCertificateModal()" title="點擊領取小小畢卡索榮譽獎狀">
             <span>⭐</span>
             <span id="statStars">30</span>
-            <small>星星</small>
           </div>
-          <div class="stat-pill art-pill" onclick="app.switchTab('gallery')" title="點擊前往美術館畫廊">
-            <span>🖼️</span>
-            <span id="statWorks">0</span>
-            <small>畫作</small>
-          </div>
-          <div class="stat-pill badge-pill" onclick="app.switchTab('top10')" title="查看十大兒童塗鴉APP總結">
-            <span>👑</span>
-            <span>十大APP進化版</span>
-          </div>
-        </div>
-
-        <!-- 🎛️ 聲音、語音、左右手與 iPad mini 7 外框控制 -->
-        <div class="quick-controls">
           <button id="btnVoice" class="ctrl-chip active" onclick="app.toggleVoice()" title="中英雙語發音與故事語音">
-            🗣️ 雙語語音
+            🗣️ 語音
           </button>
           <button id="btnSfx" class="ctrl-chip active" onclick="app.toggleSfx()" title="Do-Re-Mi音樂畫筆音效">
-            🎵 音階畫筆
+            🎵 音效
           </button>
           <button id="btnBgm" class="ctrl-chip" onclick="app.toggleBgm()" title="輕快木琴背景音樂">
-            🎶 輕音樂
+            🎶 音樂
           </button>
-          <button id="btnHand" class="ctrl-chip" onclick="app.toggleLeftHand()" title="專為左撇子學童設計的鏡像工具列">
-            🤚 右手版面
+          <button id="btnHand" class="ctrl-chip" onclick="app.toggleLeftHand()" title="專為左撇子學童設計的左右鏡像版面">
+            🤚 右手
           </button>
-          <button id="btnIpadMode" class="ctrl-chip ipad-highlight" onclick="app.toggleIpadFrame()" title="預覽 8.3吋 iPad mini 7 螢幕外框">
-            📱 iPad mini 7 外框
+          <button id="btnFullscreen" class="ctrl-chip" onclick="app.requestTabletFullscreen()" title="隱藏瀏覽器工具列切換全螢幕">
+            ⛶ 全螢幕
+          </button>
+          <button id="btnIpadMode" class="ctrl-chip ipad-highlight" onclick="app.toggleIpadFrame()" title="在電腦上預覽 iPad mini 7 Safari 含頂部網址列的真實畫面">
+            📱 平板模擬
           </button>
         </div>
       </header>
 
-      <!-- 🧭 五大核心功能主選單 (大圖示兒童友善 Tab) -->
-      <nav class="main-nav">
-        <button class="nav-tab active" data-tab="studio" onclick="app.switchTab('studio')">
-          <span class="tab-icon">🖌️</span>
-          <span class="tab-label">魔法填色畫室</span>
-        </button>
-        <button class="nav-tab" data-tab="templates" onclick="app.switchTab('templates')">
-          <span class="tab-icon">📚</span>
-          <span class="tab-label">54款塗鴉公版庫</span>
-        </button>
-        <button class="nav-tab" data-tab="games" onclick="app.switchTab('games')">
-          <span class="tab-icon">🎮</span>
-          <span class="tab-label">5大藝術小遊戲</span>
-        </button>
-        <button class="nav-tab" data-tab="gallery" onclick="app.switchTab('gallery')">
-          <span class="tab-icon">🏛️</span>
-          <span class="tab-label">我的美術館＆報告</span>
-        </button>
-        <button class="nav-tab" data-tab="top10" onclick="app.switchTab('top10')">
-          <span class="tab-icon">🏆</span>
-          <span class="tab-label">十大兒童塗鴉APP總結</span>
-        </button>
-      </nav>
-
       <!-- ================================================================= -->
-      <!-- 🖌️ 分頁 1：魔法填色畫室 (SVG 分區防出界 + 自由手繪雙層混合引擎) -->
+      <!-- 🖌️ 分頁 1：魔法填色畫室 (專為平板 Safari 最佳化：三欄各自支援順暢捲動 + 動作列置頂永不遮擋) -->
       <!-- ================================================================= -->
       <main id="tab-studio" class="tab-panel active">
         <div id="studioLayout" class="studio-layout">
-          <!-- 左側：8大魔法畫筆與智慧填色工具欄 -->
+          <!-- 左側：動作置頂 + 8大魔法畫筆 + 40款貼紙章 (支援獨立手指上下滑動) -->
           <aside class="tools-sidebar">
-            <div class="sidebar-section-title">🪄 選擇畫筆與魔法工具</div>
+            <!-- 🔥 關鍵優化：將「復原 / 自動配色 / 清空」置於最上方 Sticky，在平板上絕對不會被下方蓋住！ -->
+            <div class="action-buttons-stack sticky-top-actions">
+              <button class="act-btn undo-btn" onclick="app.undo()" title="復原上一步">↩️ 復原</button>
+              <button class="act-btn magic-btn" onclick="app.autoRainbowFill()" title="魔術棒一鍵七彩配色">🪄 自動配色</button>
+              <button class="act-btn clear-btn" onclick="app.clearCanvasConfirm()" title="清空畫布重新開始">🗑️ 清空重畫</button>
+            </div>
+
+            <div class="sidebar-section-title">🪄 8大魔法畫筆與填色工具</div>
             <div class="tool-grid">
               <button class="tool-btn active" data-tool="bucket" onclick="app.selectTool('bucket')">
                 <span class="t-icon">🪣</span>
@@ -140,47 +150,45 @@
               </button>
             </div>
 
-            <!-- 筆刷粗細與貼紙選擇區 -->
+            <!-- 筆刷粗細滑桿 -->
             <div class="brush-size-box">
-              <label>📏 畫筆粗細：<span id="brushSizeLabel">20</span> px</label>
+              <div class="brush-size-header">
+                <span>📏 畫筆粗細</span>
+                <strong><span id="brushSizeLabel">20</span> px</strong>
+              </div>
               <input type="range" id="brushSizeSlider" min="6" max="48" value="20" oninput="app.updateBrushSize(this.value)" />
             </div>
 
-            <!-- 貼紙印章快速抽屜 (當選擇貼紙章或隨時可切換) -->
+            <!-- 貼紙印章快速抽屜 -->
             <div class="stamp-drawer">
-              <div class="sidebar-section-title">🌟 點選印章圖案 (點擊畫布蓋章)</div>
+              <div class="sidebar-section-title">🌟 40款貼紙章 (點選後點畫布)</div>
               <div id="stampSelectorGrid" class="stamp-grid"></div>
-            </div>
-
-            <!-- 動作快捷鍵 -->
-            <div class="action-buttons-stack">
-              <button class="act-btn undo-btn" onclick="app.undo()">↩️ 復原上一步</button>
-              <button class="act-btn magic-btn" onclick="app.autoRainbowFill()">🪄 魔術棒自動配色</button>
-              <button class="act-btn clear-btn" onclick="app.clearCanvasConfirm()">🗑️ 清空重畫</button>
             </div>
           </aside>
 
-          <!-- 中央：互動雙層畫布舞台 (底層 SVG 智慧分區 + 上層 HTML5 Canvas 手繪與貼紙特效) -->
+          <!-- 中央：自適應彈性畫布舞台 (自動根據 Safari 剩餘高度縮放畫布，確保頂部與底部按鈕 100% 完整顯示！) -->
           <section class="canvas-stage-area">
-            <!-- 畫布頂部公版資訊與雙語故事列 -->
+            <!-- 畫布頂部公版資訊與魔法功能列 -->
             <div class="canvas-top-banner">
-              <div class="template-info-badge">
+              <div class="template-info-badge" onclick="app.speakCurrentTemplate()" title="點擊朗讀雙語故事">
                 <span id="currentTplIcon" class="tpl-emoji">🐻</span>
-                <div>
-                  <h2 id="currentTplTitle">台灣黑熊歐熊 <small id="currentTplEn">Formosan Black Bear</small></h2>
+                <div class="tpl-text-wrap">
+                  <div class="tpl-title-line">
+                    <h2 id="currentTplTitle">台灣黑熊歐熊 <small id="currentTplEn">Formosan Black Bear</small></h2>
+                  </div>
                   <p id="currentTplFact">台灣黑熊胸口有白色的 V 字領巾，是台灣森林裡的驕傲國寶喔！</p>
                 </div>
               </div>
               <div class="canvas-stage-Buttons">
-                <button class="stage-chip" onclick="app.speakCurrentTemplate()" title="朗讀雙語名稱與科普小故事">🔊 聽雙語故事</button>
-                <button id="btnNumberGuide" class="stage-chip" onclick="app.toggleNumberGuide()" title="顯示數字密碼提示 (Happy Color 玩法)">🔢 數字密碼提示</button>
-                <button id="btnAliveDance" class="stage-chip magic-dance" onclick="app.toggleAliveAnimation()" title="讓畫好的角色動起來跳舞！">💃 魔法復活跳舞</button>
-                <button class="stage-chip blank-chip" onclick="app.loadBlankCanvas()" title="切換為全白自由塗鴉畫紙">📄 空白畫紙</button>
+                <button class="stage-chip" onclick="app.speakCurrentTemplate()">🔊 聽故事</button>
+                <button id="btnNumberGuide" class="stage-chip" onclick="app.toggleNumberGuide()">🔢 數字密碼</button>
+                <button id="btnAliveDance" class="stage-chip magic-dance" onclick="app.toggleAliveAnimation()">💃 角色跳舞</button>
+                <button class="stage-chip blank-chip" onclick="app.loadBlankCanvas()">📄 空白畫紙</button>
               </div>
             </div>
 
-            <!-- 畫布核心容器 (500x500 等比例自適應縮放) -->
-            <div class="canvas-frame-outer">
+            <!-- 畫布核心容器 (透過 ResizeObserver 與 CSS flex min-height:0 自動縮放正方形邊長，絕不擠掉底欄！) -->
+            <div id="canvasFrameOuter" class="canvas-frame-outer">
               <div id="artboardContainer" class="artboard-container">
                 <!-- 第一層：SVG 智慧分區填色層 -->
                 <div id="svgTemplateHolder" class="svg-template-holder"></div>
@@ -191,94 +199,94 @@
               </div>
             </div>
 
-            <!-- 畫布底部快速切換上一張/下一張公版與完成儲存 -->
+            <!-- 畫布底部快速切換上一張/下一張公版與完成儲存 (常駐可見，預留 Safari 底部安全距離) -->
             <div class="canvas-bottom-bar">
-              <button class="bottom-nav-btn" onclick="app.prevTemplate()">⬅️ 上一張公版</button>
-              <button class="bottom-nav-btn pick-btn" onclick="app.switchTab('templates')">📚 挑選 54 款公版 (<span id="currentTplIndex">1</span>/54)</button>
-              <button class="bottom-nav-btn" onclick="app.nextTemplate()">下一張公版 ➡️</button>
-              <button class="bottom-save-btn" onclick="app.saveToGallery()">📸 裝裱收藏至美術館 ＋ 領取星星</button>
+              <button class="bottom-nav-btn" onclick="app.prevTemplate()">⬅️ 上一張</button>
+              <button class="bottom-nav-btn pick-btn" onclick="app.switchTab('templates')">📚 選公版 (<span id="currentTplIndex">1</span>/54)</button>
+              <button class="bottom-nav-btn" onclick="app.nextTemplate()">下一張 ➡️</button>
+              <button class="bottom-save-btn" onclick="app.saveToGallery()">📸 裝裱收藏 ＋ 領取 20⭐</button>
             </div>
           </section>
 
-          <!-- 右側：24色兒童美學色盤 + 6款夢幻漸層魔法色 -->
+          <!-- 右側：24色兒童美學色盤 + 6款夢幻漸層魔法色 (支援獨立手指上下滑動) -->
           <aside class="palette-sidebar">
             <div class="current-color-preview">
               <div id="activeColorSwatch" class="active-swatch" style="background: #FF3B30;"></div>
               <div class="active-color-meta">
                 <span class="meta-label">目前選取畫筆顏色</span>
-                <strong id="activeColorName">🍓 草莓紅 (Do)</strong>
+                <strong id="activeColorName">🍓 草莓紅</strong>
               </div>
             </div>
 
-            <div class="sidebar-section-title">🌈 24色音樂美學色盤 (點擊發音階)</div>
+            <div class="sidebar-section-title">🌈 24色音樂色盤 (點擊發音階)</div>
             <div id="colorPaletteGrid" class="palette-grid"></div>
 
-            <div class="sidebar-section-title">✨ 6款魔術漸層漆 (點一下填滿漸層)</div>
+            <div class="sidebar-section-title">✨ 6款魔術漸層漆 (點一下填滿)</div>
             <div id="gradientPaletteGrid" class="gradient-grid"></div>
           </aside>
         </div>
       </main>
 
       <!-- ================================================================= -->
-      <!-- 📚 分頁 2：54款塗鴉公版總覽庫 (6大主題分類篩選 + 關鍵字搜尋) -->
+      <!-- 📚 分頁 2：54款塗鴉公版總覽庫 (支援平滑觸控上下捲動與底部安全留白) -->
       <!-- ================================================================= -->
-      <section id="tab-templates" class="tab-panel">
+      <section id="tab-templates" class="tab-panel scrollable-panel">
         <div class="panel-header-card">
           <div>
             <h2>📚 54款高辨識度智慧防出界塗鴉公版庫</h2>
             <p>涵蓋台灣在地特色動物、恐龍探險、海底世界、交通太空、台灣美食甜點與童話城堡！點擊任一公版即可立即開始塗色。</p>
           </div>
           <div class="template-random-box">
-            <button class="primary-pill-btn" onclick="app.pickRandomTemplate()">🎲 幫我隨機挑一張驚喜公版！</button>
+            <button class="primary-pill-btn" onclick="app.pickRandomTemplate()">🎲 隨機挑一張驚喜公版！</button>
           </div>
         </div>
 
-        <!-- 6大分類篩選膠囊 -->
-        <div id="categoryFilterBar" class="category-filter-bar"></div>
+        <!-- 6大分類篩選膠囊 (黏性置頂，方便滑動時隨時切換分類) -->
+        <div id="categoryFilterBar" class="category-filter-bar sticky-subbar"></div>
 
         <!-- 54款公版網格預覽 -->
         <div id="templatesGalleryGrid" class="templates-gallery-grid"></div>
       </section>
 
       <!-- ================================================================= -->
-      <!-- 🎮 分頁 3：5大創意藝術與色彩益智小遊戲樂園 -->
+      <!-- 🎮 分頁 3：5大創意藝術與色彩益智小遊戲樂園 (全面支援平板順暢捲動與自適應高度) -->
       <!-- ================================================================= -->
-      <section id="tab-games" class="tab-panel">
+      <section id="tab-games" class="tab-panel scrollable-panel">
         <!-- 小遊戲選擇器 -->
         <div class="games-selector-bar">
           <button class="game-tab-btn active" data-game="number" onclick="app.switchMiniGame('number')">
             <span>🔢</span>
             <div>
-              <strong>1. 數字與算式密碼填色</strong>
-              <small>Happy Color 數感美學</small>
+              <strong>1. 數字算式填色</strong>
+              <small>Happy Color 數感</small>
             </div>
           </button>
           <button class="game-tab-btn" data-game="mandala" onclick="app.switchMiniGame('mandala')">
             <span>❄️</span>
             <div>
-              <strong>2. 魔法萬花筒對稱光繪</strong>
-              <small>Drawing Desk 鏡像曼陀羅</small>
+              <strong>2. 萬花筒光繪</strong>
+              <small>鏡像對稱曼陀羅</small>
             </div>
           </button>
           <button class="game-tab-btn" data-game="pixel" onclick="app.switchMiniGame('pixel')">
             <span>👾</span>
             <div>
-              <strong>3. 點陣像素拼豆大師</strong>
-              <small>Crayola 像素方塊工坊</small>
+              <strong>3. 像素拼豆大師</strong>
+              <small>12×12 點陣工坊</small>
             </div>
           </button>
           <button class="game-tab-btn" data-game="mixer" onclick="app.switchMiniGame('mixer')">
             <span>🧪</span>
             <div>
-              <strong>4. 色彩魔法調色實驗室</strong>
-              <small>STEAM 三原色混色闖關</small>
+              <strong>4. 魔法調色實驗</strong>
+              <small>三原色混色闖關</small>
             </div>
           </button>
           <button class="game-tab-btn" data-game="scratch" onclick="app.switchMiniGame('scratch')">
             <span>✨</span>
             <div>
-              <strong>5. 彩虹魔術刮刮畫尋寶</strong>
-              <small>刮開黑幕發現七彩星座</small>
+              <strong>5. 彩虹刮刮尋寶</strong>
+              <small>刮開黑幕見星空</small>
             </div>
           </button>
         </div>
@@ -295,7 +303,7 @@
                   <button class="mg-chip" onclick="app.nextNumberGameTemplate()">🔄 換一張圖</button>
                 </div>
               </div>
-              <p class="mg-desc">先點選下方對應編號（1～8）的密碼顏色球，再點擊畫布上相同數字或算式答案的區塊！全部塗對就能放煙火拿大獎！</p>
+              <p class="mg-desc">先點選下方對應編號（1～8）的密碼顏色球，再點擊右側畫布上相同數字或算式答案的區塊！全部塗對就能放煙火拿大獎！</p>
               <div id="numGamePalette" class="num-game-palette"></div>
               <div class="num-progress-box">
                 <span>🎯 完成進度：<strong id="numGameProgressText">0 / 10</strong> 區</span>
@@ -313,17 +321,17 @@
           <div class="minigame-split">
             <div class="mg-left-card">
               <h3>❄️ 魔法萬花筒對稱光繪室 (Kaleidoscope Glow Studio)</h3>
-              <p class="mg-desc">源自全球熱門《Drawing Desk》最受歡迎的萬花筒畫筆！在夜光黑板上隨手畫一筆，就會自動鏡像變化出超夢幻的雪花與煙火曼陀羅！</p>
+              <p class="mg-desc">源自全球熱門《Drawing Desk》最受歡迎的萬花筒畫筆！在右側夜光黑板上隨手畫一筆，就會自動鏡像變化出超夢幻的雪花與煙火曼陀羅！</p>
               <div class="mandala-options">
-                <label>🔄 對稱軸數量：</label>
+                <label class="mg-label">🔄 選擇對稱軸數量：</label>
                 <div class="chip-group">
                   <button class="mg-chip" onclick="app.setMandalaAxes(4, this)">4軸十字對稱</button>
                   <button class="mg-chip active" onclick="app.setMandalaAxes(8, this)">8軸雪花對稱</button>
                   <button class="mg-chip" onclick="app.setMandalaAxes(12, this)">12軸萬花筒</button>
                 </div>
-                <label style="margin-top:12px;display:block;">🌈 選擇霓虹光束顏色：</label>
+                <label class="mg-label" style="margin-top:10px;">🌈 選擇霓虹光束顏色：</label>
                 <div id="mandalaColorBar" class="mandala-color-bar"></div>
-                <div class="mg-action-row" style="margin-top:16px;">
+                <div class="mg-action-row" style="margin-top:14px;">
                   <button class="primary-pill-btn" onclick="app.saveMandalaToGallery()">📸 收藏萬花筒作品 (+15⭐)</button>
                   <button class="secondary-pill-btn" onclick="app.clearMandala()">🗑️ 清空夜光黑板</button>
                 </div>
@@ -340,16 +348,17 @@
           <div class="minigame-split">
             <div class="mg-left-card">
               <h3>👾 12×12 點陣像素拼豆大師 (Pixel Art Maker)</h3>
-              <p class="mg-desc">源自《Crayola Create & Play》 STEAM 像素工坊！可以照著範本拼出可愛像素圖，或自由創作你的專屬 Minecraft 風像素貼圖！</p>
+              <p class="mg-desc">源自《Crayola Create & Play》 STEAM 像素工坊！可以點選範本或自由在右側方格點選拼出你的專屬像素貼圖！</p>
               <div class="chip-group" style="margin-bottom:10px;">
-                <button class="mg-chip active" onclick="app.loadPixelPreset('heart')">❤️ 愛心寶石</button>
-                <button class="mg-chip" onclick="app.loadPixelPreset('duck')">🐥 黃色小鴨</button>
-                <button class="mg-chip" onclick="app.loadPixelPreset('mushroom')">🍄 超級蘑菇</button>
-                <button class="mg-chip" onclick="app.loadPixelPreset('boba')">🧋 像素珍奶</button>
-                <button class="mg-chip" onclick="app.loadPixelPreset('clear')">⬜ 全白自創</button>
+                <button class="mg-chip active" onclick="app.loadPixelPreset('heart', this)">❤️ 愛心寶石</button>
+                <button class="mg-chip" onclick="app.loadPixelPreset('duck', this)">🐥 黃色小鴨</button>
+                <button class="mg-chip" onclick="app.loadPixelPreset('mushroom', this)">🍄 超級蘑菇</button>
+                <button class="mg-chip" onclick="app.loadPixelPreset('boba', this)">🧋 像素珍奶</button>
+                <button class="mg-chip" onclick="app.loadPixelPreset('clear', this)">⬜ 全白自創</button>
               </div>
+              <label class="mg-label">🎨 選擇拼豆顏色：</label>
               <div id="pixelColorBar" class="mandala-color-bar"></div>
-              <div class="mg-action-row" style="margin-top:16px;">
+              <div class="mg-action-row" style="margin-top:14px;">
                 <button class="primary-pill-btn" onclick="app.savePixelToGallery()">📸 熨燙完成並收藏 (+15⭐)</button>
               </div>
             </div>
@@ -364,7 +373,7 @@
           <div class="mixer-card-container">
             <div class="mixer-quest-header">
               <span class="quest-owl">🦉🎨</span>
-              <div>
+              <div style="flex:1;">
                 <h3 id="mixerQuestTitle">色彩煉金術任務：怪獸客人想喝「葡萄紫色」果昔！</h3>
                 <p id="mixerQuestHint">請從下方挑選 2 種三原色倒入魔法果昔機，調出目標顏色吧！</p>
               </div>
@@ -392,7 +401,7 @@
             <!-- 底部：基礎顏料瓶按鈕 -->
             <div class="base-paints-row">
               <button class="paint-bottle-btn" style="--bottle-color:#FF3B30" onclick="app.addMixerColor('red', '🍎 紅色', '#FF3B30')">🍎 倒入紅色</button>
-              <button class="paint-bottle-btn" style="--bottle-color:#FFCC00" onclick="app.addMixerColor('yellow', '🍋 黃色', '#FFCC00')">🍋 倒入黃色</button>
+              <button class="paint-bottle-btn" style="--bottle-color:#FFCC00; color:#2C3E50;" onclick="app.addMixerColor('yellow', '🍋 黃色', '#FFCC00')">🍋 倒入黃色</button>
               <button class="paint-bottle-btn" style="--bottle-color:#007AFF" onclick="app.addMixerColor('blue', '💧 藍色', '#007AFF')">💧 倒入藍色</button>
               <button class="paint-bottle-btn" style="--bottle-color:#FFFFFF; color:#2C3E50;" onclick="app.addMixerColor('white', '🥛 白色', '#FFFFFF')">🥛 倒入牛奶白</button>
               <button class="paint-bottle-btn reset-bottle" onclick="app.resetMixerCup()">🔄 洗杯子重調</button>
@@ -405,17 +414,17 @@
           <div class="minigame-split">
             <div class="mg-left-card">
               <h3>✨ 彩虹魔術刮刮畫尋寶 (Rainbow Scratch Art)</h3>
-              <p class="mg-desc">國小美術課最愛的「黑色竹籤刮刮紙」！用手指或 Apple Pencil 在黑色魔法塗層上刮一刮，底下會透出耀眼的七彩雷射星空與隱藏寶藏喔！</p>
-              <div class="chip-group" style="margin:14px 0;">
-                <button class="mg-chip active" onclick="app.initScratchCard(0)">🦄 隱藏版：星空獨角獸</button>
-                <button class="mg-chip" onclick="app.initScratchCard(1)">🦖 隱藏版：夜光暴龍王</button>
-                <button class="mg-chip" onclick="app.initScratchCard(2)">🚀 隱藏版：銀河太空船</button>
+              <p class="mg-desc">國小美術課最愛的「黑色竹籤刮刮紙」！用手指或 Apple Pencil 在右側黑色魔法塗層上刮一刮，底下會透出耀眼的七彩雷射星空與隱藏寶藏喔！</p>
+              <div class="chip-group" style="margin:10px 0;">
+                <button class="mg-chip active" onclick="app.initScratchCard(0, this)">🦄 隱藏版：星空獨角獸</button>
+                <button class="mg-chip" onclick="app.initScratchCard(1, this)">🦖 隱藏版：夜光暴龍王</button>
+                <button class="mg-chip" onclick="app.initScratchCard(2, this)">🚀 隱藏版：銀河太空船</button>
               </div>
               <div class="num-progress-box">
                 <span>✨ 已刮開面積：<strong id="scratchPercentText">0%</strong></span>
                 <div class="progress-bar-bg"><div id="scratchProgressBar" class="progress-bar-fill" style="width:0%"></div></div>
               </div>
-              <div class="mg-action-row" style="margin-top:16px;">
+              <div class="mg-action-row" style="margin-top:14px;">
                 <button class="primary-pill-btn" onclick="app.revealAllScratch()">🪄 一鍵刮開全部驚喜</button>
                 <button class="secondary-pill-btn" onclick="app.initScratchCard()">🔄 重新蓋上黑幕</button>
               </div>
@@ -433,7 +442,7 @@
       <!-- ================================================================= -->
       <!-- 🏛️ 分頁 4：我的美術館畫廊 ＆ 家長五維度美感雷達報告 -->
       <!-- ================================================================= -->
-      <section id="tab-gallery" class="tab-panel">
+      <section id="tab-gallery" class="tab-panel scrollable-panel">
         <div class="gallery-top-grid">
           <!-- 左側：家長美感與創造力五維度分析 -->
           <div class="parent-report-card">
@@ -466,19 +475,19 @@
                 <strong id="valFocus">92%</strong>
               </div>
             </div>
-            <button class="primary-pill-btn" style="margin-top:14px;width:100%;" onclick="app.openCertificateModal()">
+            <button class="primary-pill-btn" style="margin-top:12px;width:100%;" onclick="app.openCertificateModal()">
               🏆 頒發「小小畢卡索榮譽獎狀」並語音表揚
             </button>
           </div>
 
           <!-- 右側：iPad mini 7 連線與轉存說明卡 -->
           <div class="ipad-guide-card">
-            <h3>📱 如何在 iPad mini 7 上全螢幕開啟＆儲存畫作？</h3>
+            <h3>📱 iPad mini 7 平板瀏覽器最佳化設計說明</h3>
             <ol class="ipad-steps">
-              <li><strong>方法 A（同 Wi-Fi 秒開）：</strong>在電腦雙擊資料夾內的 <code>啟動彩虹魔法畫布.bat</code>，會自動顯示區域網路網址，用 iPad mini 7 的 <strong>Safari</strong> 掃描或輸入網址即可開啟！</li>
-              <li><strong>方法 B（AirDrop / iCloud 離線開啟）：</strong>將本資料夾傳送至 iPad「檔案 (Files)」App 或放入靜態空間，以 Safari 開啟。</li>
-              <li><strong>加入主畫面變身原生 App：</strong>在 iPad Safari 點擊右上角「分享 📤」➔ 選擇 <strong>「加入主畫面 (Add to Home Screen)」</strong>，即可滿版無網址列流暢繪畫！</li>
-              <li><strong>一鍵下載 PNG 畫作：</strong>下方美術館的每幅作品皆可點擊「💾 下載 PNG 圖檔」，直接存入 iPad 相簿或印出來貼在冰箱上！</li>
+              <li><strong>動態可視高度 (`visualViewport` + `100dvh`)：</strong>自動偵測 iPad Safari 頂部網址列與分頁列高度，智慧縮放畫布並保證底部按鈕 100% 完整顯示不遮擋！</li>
+              <li><strong>全頁面與側欄順暢觸控滑動：</strong>左側畫筆欄、右側色盤欄、54款公版庫與5大小遊戲均支援 iPad 手指慣性上下滑動 (`-webkit-overflow-scrolling: touch`)。</li>
+              <li><strong>一鍵隱藏網址列技巧：</strong>可點擊右上角 <code>⛶ 全螢幕</code> 按鈕，或在 Safari 點擊「分享 📤」➔ <strong>「加入主畫面」</strong> 享受滿版體驗！</li>
+              <li><strong>一鍵下載 PNG 畫作：</strong>下方美術館的每幅作品皆可點擊「💾 下載 PNG」，直接存入 iPad 相簿！</li>
             </ol>
           </div>
         </div>
@@ -490,7 +499,7 @@
       <!-- ================================================================= -->
       <!-- 🏆 分頁 5：全球最熱門十大兒童塗鴉 APP 深度總結與超越對照表 -->
       <!-- ================================================================= -->
-      <section id="tab-top10" class="tab-panel">
+      <section id="tab-top10" class="tab-panel scrollable-panel">
         <div class="panel-header-card">
           <div>
             <h2>🏆 全球最熱門十大兒童塗鴉 APP 深度總結 ＆ 本系統超越進化對照</h2>
@@ -503,7 +512,7 @@
   </div>
 
   <!-- 🏆 小小畢卡索榮譽獎狀彈窗 Modal -->
-  <div id="certificateModal" class="modal-backdrop hidden" onclick="app.closeCertificateModal(event)">
+  <div id="certificateModal" class="modal-backdrop hidden" onclick="app.closeCertificateModal()">
     <div class="certificate-dialog" onclick="event.stopPropagation()">
       <div class="cert-border">
         <div class="cert-ribbon">🏆 皇家彩虹藝術學院 榮譽獎狀 🏆</div>

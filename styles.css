@@ -1,9 +1,10 @@
 /* ==========================================================================
-   🎨 彩虹魔法畫布 Rainbow Magic Canvas Pro - iPad mini 7 旗艦觸控最佳化樣式表
-   專為 Apple iPad mini 7 (8.3" Liquid Retina 1133×744 / 744×1133) 與電腦瀏覽器設計
+   🎨 彩虹魔法畫布 Rainbow Magic Canvas Pro - iPad mini 7 平板瀏覽器完美適配樣式表
+   解決 Safari 頂部網址列/書籤列與底部 Home 橫條導致下方按鈕被遮擋、無法下滑的核心問題
    ========================================================================== */
 
 :root {
+  --app-height: 100dvh;
   --bg-gradient: linear-gradient(135deg, #FFF5F8 0%, #F0F7FF 50%, #FFFBEB 100%);
   --card-bg: #FFFFFF;
   --primary: #FF5E7E;
@@ -15,10 +16,10 @@
   --text-dark: #2C3E50;
   --text-muted: #5C6B73;
   --border-soft: #E2E8F0;
-  --shadow-soft: 0 8px 24px rgba(44, 62, 80, 0.08);
-  --shadow-pop: 0 6px 0 rgba(44, 62, 80, 0.14);
-  --radius-lg: 22px;
-  --radius-md: 16px;
+  --shadow-soft: 0 6px 20px rgba(44, 62, 80, 0.07);
+  --radius-lg: 18px;
+  --radius-md: 14px;
+  --safe-bottom: env(safe-area-inset-bottom, 12px);
 }
 
 * {
@@ -26,52 +27,53 @@
   margin: 0;
   padding: 0;
   -webkit-tap-highlight-color: transparent;
-  user-select: none;
-  -webkit-user-select: none;
 }
 
 html, body {
   width: 100%;
-  height: 100%;
+  min-height: 100%;
+  height: var(--app-height, 100dvh);
   font-family: "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", "Rounded Mplus 1c", sans-serif;
   background: #1A1D24;
   color: var(--text-dark);
-  overflow: hidden;
-  overscroll-behavior: none;
+  /* 允許在極端視窗下自然捲動，絕不鎖死使用者滑動手勢 */
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* 全螢幕煙火特效層 */
 .confetti-canvas {
   position: fixed;
   inset: 0;
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
   z-index: 9999;
 }
 
-/* 📱 iPad mini 7 外框預覽 vs 全螢幕滿版模式 */
+/* 📱 iPad mini 7 外框預覽 vs 平板瀏覽器真實滿版容器 */
 .device-wrapper {
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: var(--app-height, 100dvh);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   background: radial-gradient(circle at center, #2B303C 0%, #14171F 100%);
-  transition: all 0.3s ease;
 }
 
 .ipad-bezel-header {
   display: none;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   color: #E2E8F0;
-  font-size: 13px;
-  margin-bottom: 8px;
-  padding: 6px 16px;
-  background: rgba(255, 255, 255, 0.08);
+  font-size: 12px;
+  margin-bottom: 6px;
+  padding: 5px 14px;
+  background: rgba(255, 255, 255, 0.1);
   border-radius: 999px;
+  flex-shrink: 0;
 }
 
 .device-wrapper.ipad-frame-mode .ipad-bezel-header {
@@ -79,8 +81,8 @@ html, body {
 }
 
 .camera-dot {
-  width: 10px;
-  height: 10px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
   background: #38BDF8;
   box-shadow: 0 0 8px #38BDF8;
@@ -90,11 +92,16 @@ html, body {
   border: 1px solid rgba(255, 255, 255, 0.25);
   background: rgba(255, 255, 255, 0.12);
   color: #FFFFFF;
-  padding: 4px 12px;
+  padding: 4px 10px;
   border-radius: 99px;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 700;
+}
+
+.bezel-btn.active {
+  background: #0EA5E9;
+  border-color: #38BDF8;
 }
 
 .bezel-btn.primary {
@@ -113,13 +120,13 @@ html, body {
   position: relative;
 }
 
-/* 當開啟 iPad mini 7 外框模擬時：模擬 8.3 吋 1133×744 比例 */
+/* 當開啟 iPad mini 7 外框模擬時：精確模擬 8.3 吋 1133×744 比例 */
 .device-wrapper.ipad-frame-mode .app-container {
   width: min(96vw, 1133px);
   height: min(88vh, 744px);
-  border-radius: 34px;
-  border: 14px solid #1E222B;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65), 0 0 0 2px #475569;
+  border-radius: 30px;
+  border: 12px solid #1E222B;
+  box-shadow: 0 20px 55px rgba(0, 0, 0, 0.65), 0 0 0 2px #475569;
 }
 
 .device-wrapper.ipad-frame-mode.portrait-mode .app-container {
@@ -127,120 +134,183 @@ html, body {
   height: min(90vh, 1080px);
 }
 
-/* 🌟 頂部導覽列 */
+/* 🌐 模擬 iPad Safari 頂部狀態列＋網址分頁列 (約 68px 高，驗證不遮擋下方按鈕) */
+.safari-mock-bar {
+  display: none;
+  flex-direction: column;
+  background: #F1F5F9;
+  border-bottom: 1px solid #CBD5E1;
+  padding: 4px 14px 6px;
+  gap: 4px;
+  flex-shrink: 0;
+  font-size: 11px;
+  color: #475569;
+}
+
+.device-wrapper.ipad-frame-mode.sim-safari-bar .safari-mock-bar {
+  display: flex;
+}
+
+.safari-status-row {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  font-size: 10.5px;
+}
+
+.safari-address-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.safari-url-box {
+  flex: 1;
+  max-width: 520px;
+  background: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  border-radius: 8px;
+  padding: 4px 12px;
+  text-align: center;
+  font-weight: 700;
+  color: #1E293B;
+  font-size: 11.5px;
+}
+
+.safari-nav-icons {
+  font-size: 13px;
+  letter-spacing: 4px;
+}
+
+/* ==========================================================================
+   🌟 超精簡一體化頂部導覽列 (Unified Compact Header - 僅 48px 高！)
+   ========================================================================== */
 .top-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 16px;
-  background: rgba(255, 255, 255, 0.92);
+  padding: 5px 12px;
+  background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   border-bottom: 2px solid #FFE4EC;
-  gap: 10px;
+  gap: 8px;
   flex-shrink: 0;
+  min-height: 48px;
 }
 
 .brand-group {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 7px;
   cursor: pointer;
+  flex-shrink: 0;
 }
 
 .brand-logo {
-  width: 42px;
-  height: 42px;
-  border-radius: 14px;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
   background: linear-gradient(135deg, #FF5E7E, #FFBE0B);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
-  box-shadow: 0 4px 10px rgba(255, 94, 126, 0.3);
+  font-size: 19px;
+  box-shadow: 0 3px 8px rgba(255, 94, 126, 0.28);
 }
 
 .brand-titles h1 {
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 900;
   color: var(--text-dark);
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
+  white-space: nowrap;
 }
 
 .badge-ipad {
-  font-size: 11px;
+  font-size: 10px;
   background: linear-gradient(135deg, #3A86FF, #8338EC);
   color: #FFF;
-  padding: 2px 8px;
+  padding: 2px 6px;
   border-radius: 99px;
   font-weight: 700;
 }
 
-.brand-titles p {
-  font-size: 11px;
-  color: var(--text-muted);
-  font-weight: 600;
-}
-
-.stats-bar {
+/* 🧭 整合式五大主功能導覽列 */
+.main-nav {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 5px;
+  flex: 1;
+  justify-content: center;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.main-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.nav-tab {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  border-radius: 11px;
+  border: 2px solid #F1F5F9;
+  background: #FFFFFF;
+  color: var(--text-dark);
+  font-size: 12.5px;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+
+.nav-tab .tab-icon {
+  font-size: 15px;
+}
+
+.nav-tab.active {
+  background: linear-gradient(135deg, #FF5E7E, #FF85A1);
+  color: #FFFFFF;
+  border-color: #FF3B66;
+  box-shadow: 0 3px 10px rgba(255, 94, 126, 0.3);
+}
+
+/* 右側快捷控制膠囊 */
+.quick-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
 }
 
 .stat-pill {
   display: flex;
   align-items: center;
-  gap: 5px;
-  padding: 5px 12px;
+  gap: 3px;
+  padding: 4px 9px;
   border-radius: 99px;
-  font-weight: 800;
-  font-size: 13px;
+  font-weight: 900;
+  font-size: 12px;
   cursor: pointer;
-  border: 2px solid transparent;
-  transition: transform 0.15s;
-}
-
-.stat-pill:active {
-  transform: scale(0.95);
-}
-
-.star-pill {
+  border: 2px solid #FFD43B;
   background: #FFF9DB;
-  border-color: #FFD43B;
   color: #D97706;
 }
 
-.art-pill {
-  background: #EBFBEE;
-  border-color: #69DB7C;
-  color: #15803D;
-}
-
-.badge-pill {
-  background: #F3E8FF;
-  border-color: #C084FC;
-  color: #7E22CE;
-}
-
-.quick-controls {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
 .ctrl-chip {
-  padding: 6px 11px;
+  padding: 5px 8px;
   border-radius: 99px;
-  border: 2px solid #E2E8F0;
+  border: 1.5px solid #E2E8F0;
   background: #FFFFFF;
   color: var(--text-dark);
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 800;
   cursor: pointer;
-  transition: all 0.15s;
+  white-space: nowrap;
 }
 
 .ctrl-chip.active {
@@ -255,52 +325,17 @@ html, body {
   border: none;
 }
 
-/* 🧭 五大主功能導覽列 */
-.main-nav {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 8px;
-  padding: 6px 16px;
-  background: rgba(255, 255, 255, 0.78);
-  border-bottom: 2px solid #F1F5F9;
-  flex-shrink: 0;
-}
-
-.nav-tab {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  padding: 9px 8px;
-  border-radius: 14px;
-  border: 2px solid transparent;
-  background: #FFFFFF;
-  color: var(--text-dark);
-  font-size: 14px;
-  font-weight: 800;
-  cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
-  transition: all 0.18s;
-}
-
-.nav-tab .tab-icon {
-  font-size: 18px;
-}
-
-.nav-tab.active {
-  background: linear-gradient(135deg, #FF5E7E, #FF85A1);
-  color: #FFFFFF;
-  border-color: #FF3B66;
-  box-shadow: 0 5px 14px rgba(255, 94, 126, 0.35);
-  transform: translateY(-1px);
-}
-
-/* 分頁容器 */
+/* ==========================================================================
+   📦 分頁容器 (確保每個分頁在平板上都能完整顯示或順暢上下滑動)
+   ========================================================================== */
 .tab-panel {
   display: none;
   flex: 1;
+  min-height: 0;
+  padding: 8px 10px calc(8px + var(--safe-bottom));
   overflow-y: auto;
-  padding: 10px 14px;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
 }
 
 .tab-panel.active {
@@ -309,14 +344,15 @@ html, body {
 }
 
 /* ==========================================================================
-   🖌️ 分頁 1：魔法填色畫室三欄式 iPad mini 7 黃金比例佈局
+   🖌️ 分頁 1：魔法填色畫室 (專為平板 Safari 最佳化：三欄緊湊高密度 + 獨立捲動)
    ========================================================================== */
 .studio-layout {
   display: grid;
-  grid-template-columns: 225px 1fr 235px;
-  gap: 12px;
-  height: 100%;
+  grid-template-columns: 205px 1fr 215px;
+  gap: 8px;
+  flex: 1;
   min-height: 0;
+  height: 100%;
 }
 
 /* 左撇子鏡像模式 */
@@ -331,27 +367,66 @@ html, body {
 .palette-sidebar {
   background: #FFFFFF;
   border-radius: var(--radius-lg);
-  padding: 10px;
+  padding: 8px;
   box-shadow: var(--shadow-soft);
   border: 2px solid #F1F5F9;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
+  min-height: 0;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+}
+
+/* 🔥 置頂動作按鈕：復原、自動配色、清空重畫放最上面，絕不會被下方遮住 */
+.sticky-top-actions {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  background: #FFFFFF;
+  padding-bottom: 4px;
+  border-bottom: 1px dashed #E2E8F0;
+}
+
+.action-buttons-stack {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 4px;
+}
+
+.act-btn {
+  padding: 6px 4px;
+  border-radius: 10px;
+  border: none;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  color: #FFF;
+  white-space: nowrap;
+}
+
+.undo-btn {
+  background: #3B82F6;
+}
+.magic-btn {
+  background: linear-gradient(135deg, #8B5CF6, #EC4899);
+}
+.clear-btn {
+  background: #64748B;
 }
 
 .sidebar-section-title {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 900;
   color: #64748B;
-  letter-spacing: 0.3px;
   margin-top: 2px;
 }
 
 .tool-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 6px;
+  gap: 5px;
 }
 
 .tool-btn {
@@ -359,21 +434,21 @@ html, body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
-  padding: 8px 4px;
-  border-radius: 14px;
+  gap: 2px;
+  padding: 6px 4px;
+  border-radius: 11px;
   border: 2px solid #E2E8F0;
   background: #F8FAFC;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all 0.12s;
 }
 
 .tool-btn .t-icon {
-  font-size: 21px;
+  font-size: 18px;
 }
 
 .tool-btn .t-name {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 800;
   color: var(--text-dark);
 }
@@ -381,50 +456,50 @@ html, body {
 .tool-btn.active {
   background: #FFF0F3;
   border-color: var(--primary);
-  box-shadow: 0 4px 10px rgba(255, 94, 126, 0.22);
-  transform: scale(1.02);
+  box-shadow: 0 3px 8px rgba(255, 94, 126, 0.22);
 }
 
 .brush-size-box {
   background: #F8FAFC;
-  padding: 7px 10px;
-  border-radius: 12px;
+  padding: 6px 8px;
+  border-radius: 10px;
   border: 1px solid #E2E8F0;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 800;
+}
+
+.brush-size-header {
+  display: flex;
+  justify-content: space-between;
 }
 
 .brush-size-box input[type="range"] {
   width: 100%;
-  margin-top: 4px;
+  margin-top: 3px;
   accent-color: var(--primary);
 }
 
 .stamp-drawer {
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  flex: 1;
-  min-height: 75px;
+  gap: 4px;
 }
 
 .stamp-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 4px;
-  max-height: 115px;
-  overflow-y: auto;
+  gap: 3px;
   padding: 4px;
   background: #F8FAFC;
-  border-radius: 12px;
+  border-radius: 10px;
   border: 1px solid #E2E8F0;
 }
 
 .stamp-item-btn {
-  font-size: 18px;
-  height: 32px;
-  border-radius: 8px;
-  border: 2px solid transparent;
+  font-size: 16px;
+  height: 28px;
+  border-radius: 7px;
+  border: 1.5px solid transparent;
   background: #FFFFFF;
   cursor: pointer;
   display: flex;
@@ -435,108 +510,100 @@ html, body {
 .stamp-item-btn.active {
   border-color: var(--primary);
   background: #FFF0F3;
-  transform: scale(1.1);
+  transform: scale(1.08);
 }
 
-.action-buttons-stack {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px;
-}
-
-.act-btn {
-  padding: 8px 6px;
-  border-radius: 12px;
-  border: none;
-  font-size: 12px;
-  font-weight: 800;
-  cursor: pointer;
-  color: #FFF;
-}
-
-.undo-btn {
-  background: #3B82F6;
-}
-.magic-btn {
-  background: linear-gradient(135deg, #8B5CF6, #EC4899);
-}
-.clear-btn {
-  grid-column: span 2;
-  background: #64748B;
-}
-
-/* 中央畫布舞台區 */
+/* ==========================================================================
+   🖼️ 中央畫布舞台區：自適應彈性縮放，100% 保證底部切換與儲存按鈕永遠可見！
+   ========================================================================== */
 .canvas-stage-area {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   background: #FFFFFF;
   border-radius: var(--radius-lg);
-  padding: 10px 14px;
+  padding: 7px 10px;
   box-shadow: var(--shadow-soft);
   border: 2px solid #FFE4EC;
   min-height: 0;
+  height: 100%;
+  overflow: hidden;
 }
 
 .canvas-top-banner {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  padding-bottom: 8px;
-  border-bottom: 2px dashed #F1F5F9;
-  flex-wrap: wrap;
+  gap: 6px;
+  padding-bottom: 5px;
+  border-bottom: 1.5px dashed #F1F5F9;
+  flex-shrink: 0;
 }
 
 .template-info-badge {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  cursor: pointer;
+  min-width: 0;
+  flex: 1;
 }
 
 .tpl-emoji {
-  font-size: 30px;
+  font-size: 24px;
   background: #FFF5F8;
-  width: 46px;
-  height: 46px;
-  border-radius: 14px;
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #FECDD3;
+  border: 1.5px solid #FECDD3;
+  flex-shrink: 0;
+}
+
+.tpl-text-wrap {
+  min-width: 0;
+  flex: 1;
 }
 
 .template-info-badge h2 {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 900;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .template-info-badge h2 small {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--secondary);
-  margin-left: 6px;
+  margin-left: 4px;
 }
 
 .template-info-badge p {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text-muted);
-  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .canvas-stage-Buttons {
   display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
+  gap: 4px;
+  flex-shrink: 0;
 }
 
 .stage-chip {
-  padding: 6px 10px;
+  padding: 5px 8px;
   border-radius: 99px;
-  border: 2px solid #E2E8F0;
+  border: 1.5px solid #E2E8F0;
   background: #F8FAFC;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 800;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .stage-chip.active {
@@ -551,29 +618,34 @@ html, body {
   border: none;
 }
 
-/* 畫布核心容器 */
+/* 畫布外框：利用 flex:1 與 min-height:0 搭配 JS ResizeObserver 動態計算最佳正方形尺寸 */
 .canvas-frame-outer {
   flex: 1;
+  min-height: 0;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 0;
-  padding: 6px;
+  padding: 4px;
+  overflow: hidden;
 }
 
 .artboard-container {
   position: relative;
-  width: min(100%, 430px);
+  width: var(--board-size, 360px);
+  height: var(--board-size, 360px);
+  max-width: 100%;
+  max-height: 100%;
   aspect-ratio: 1 / 1;
   background: #FFFFFF;
-  border-radius: 24px;
-  border: 5px solid #FFCAD4;
-  box-shadow: 0 10px 28px rgba(255, 94, 126, 0.16);
+  border-radius: 20px;
+  border: 4px solid #FFCAD4;
+  box-shadow: 0 6px 20px rgba(255, 94, 126, 0.15);
   overflow: hidden;
   touch-action: none;
 }
 
-/* 魔法復活跳舞動畫 (Toca Boca / Bimi Boo 角色活起來特效) */
+/* 魔法復活跳舞動畫 */
 @keyframes characterDance {
   0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
   25% { transform: translateY(-10px) rotate(-3deg) scale(1.04); }
@@ -601,11 +673,7 @@ html, body {
 
 .svg-template-holder .color-zone {
   cursor: pointer;
-  transition: fill 0.18s ease, filter 0.15s ease;
-}
-
-.svg-template-holder .color-zone:hover {
-  filter: brightness(0.96);
+  transition: fill 0.16s ease;
 }
 
 /* 數字密碼浮層 */
@@ -623,18 +691,18 @@ html, body {
 .num-badge-dot {
   position: absolute;
   transform: translate(-50%, -50%);
-  width: 24px;
-  height: 24px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.92);
   border: 2px solid #2C3E50;
   color: #2C3E50;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 900;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.18);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.18);
 }
 
 /* 上層手繪與貼紙 Canvas */
@@ -647,28 +715,30 @@ html, body {
   touch-action: none;
 }
 
-/* 當使用「點一下填色桶」時，讓點擊穿透至底層 SVG 分區 */
 .drawing-canvas.pass-through {
   pointer-events: none;
 }
 
+/* 畫布底部快速切換與裝裱儲存列 (flex-shrink:0 確保永遠不被壓縮或遮擋！) */
 .canvas-bottom-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
-  padding-top: 8px;
-  border-top: 2px dashed #F1F5F9;
+  gap: 6px;
+  padding-top: 6px;
+  border-top: 1.5px dashed #F1F5F9;
+  flex-shrink: 0;
 }
 
 .bottom-nav-btn {
-  padding: 8px 12px;
-  border-radius: 12px;
-  border: 2px solid #CBD5E1;
+  padding: 7px 10px;
+  border-radius: 10px;
+  border: 1.5px solid #CBD5E1;
   background: #F8FAFC;
   font-weight: 800;
-  font-size: 13px;
+  font-size: 12px;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .bottom-nav-btn.pick-btn {
@@ -678,82 +748,85 @@ html, body {
 }
 
 .bottom-save-btn {
-  padding: 9px 16px;
-  border-radius: 14px;
+  flex: 1;
+  max-width: 230px;
+  padding: 7px 12px;
+  border-radius: 11px;
   border: none;
   background: linear-gradient(135deg, #10B981, #059669);
   color: #FFFFFF;
   font-weight: 900;
-  font-size: 13px;
+  font-size: 12px;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  box-shadow: 0 3px 10px rgba(16, 185, 129, 0.28);
+  white-space: nowrap;
 }
 
 /* 右側：24色兒童美學色盤 + 6款漸層漆 */
 .current-color-preview {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px 10px;
+  gap: 8px;
+  padding: 6px 8px;
   background: #F8FAFC;
-  border-radius: 14px;
-  border: 2px solid #E2E8F0;
+  border-radius: 11px;
+  border: 1.5px solid #E2E8F0;
+  flex-shrink: 0;
 }
 
 .active-swatch {
-  width: 38px;
-  height: 38px;
-  border-radius: 12px;
-  border: 3px solid #2C3E50;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  border: 2.5px solid #2C3E50;
   flex-shrink: 0;
 }
 
 .active-color-meta {
   display: flex;
   flex-direction: column;
+  font-size: 12px;
 }
 
 .meta-label {
-  font-size: 11px;
+  font-size: 10px;
   color: var(--text-muted);
 }
 
 .palette-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
+  gap: 5px;
 }
 
 .color-swatch-btn {
-  height: 36px;
-  border-radius: 11px;
-  border: 2.5px solid rgba(44, 62, 80, 0.2);
+  height: 30px;
+  border-radius: 9px;
+  border: 2px solid rgba(44, 62, 80, 0.2);
   cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.15s;
-  position: relative;
+  transition: transform 0.12s;
 }
 
 .color-swatch-btn.active {
-  transform: scale(1.12);
+  transform: scale(1.1);
   border-color: #2C3E50;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.22);
-  z-index: 2;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
 }
 
 .gradient-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 6px;
+  gap: 5px;
 }
 
 .gradient-swatch-btn {
-  padding: 7px 6px;
-  border-radius: 10px;
-  border: 2px solid rgba(44, 62, 80, 0.2);
+  padding: 6px 4px;
+  border-radius: 8px;
+  border: 1.5px solid rgba(44, 62, 80, 0.2);
   color: #FFFFFF;
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 900;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
   cursor: pointer;
 }
 
@@ -763,69 +836,86 @@ html, body {
 }
 
 /* ==========================================================================
-   📚 分頁 2：54款塗鴉公版庫
+   📚 分頁 2：54款塗鴉公版庫 (支援平板手指慣性捲動與底部安全區留白)
    ========================================================================== */
+.scrollable-panel {
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: calc(36px + var(--safe-bottom));
+}
+
 .panel-header-card {
   display: flex;
   align-items: center;
   justify-content: space-between;
   background: #FFFFFF;
-  padding: 14px 18px;
+  padding: 12px 16px;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-soft);
-  margin-bottom: 12px;
-  gap: 12px;
+  margin-bottom: 10px;
+  gap: 10px;
   flex-wrap: wrap;
+  flex-shrink: 0;
 }
 
 .panel-header-card h2 {
-  font-size: 19px;
+  font-size: 17px;
   font-weight: 900;
 }
 
 .panel-header-card p {
-  font-size: 13px;
+  font-size: 12px;
   color: var(--text-muted);
-  margin-top: 3px;
+  margin-top: 2px;
 }
 
 .primary-pill-btn {
-  padding: 10px 18px;
+  padding: 8px 16px;
   border-radius: 99px;
   border: none;
   background: linear-gradient(135deg, #FF5E7E, #FF9E00);
   color: #FFFFFF;
   font-weight: 900;
-  font-size: 14px;
+  font-size: 13px;
   cursor: pointer;
-  box-shadow: 0 4px 14px rgba(255, 94, 126, 0.3);
+  box-shadow: 0 4px 12px rgba(255, 94, 126, 0.28);
 }
 
 .secondary-pill-btn {
-  padding: 10px 16px;
+  padding: 8px 14px;
   border-radius: 99px;
   border: 2px solid #CBD5E1;
   background: #FFFFFF;
   color: var(--text-dark);
   font-weight: 800;
-  font-size: 13px;
+  font-size: 12.5px;
   cursor: pointer;
 }
 
 .category-filter-bar {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: wrap;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
+  flex-shrink: 0;
+}
+
+.sticky-subbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: rgba(248, 250, 252, 0.92);
+  backdrop-filter: blur(8px);
+  padding: 6px 0;
 }
 
 .cat-pill-btn {
-  padding: 8px 14px;
+  padding: 7px 12px;
   border-radius: 99px;
   border: 2px solid #E2E8F0;
   background: #FFFFFF;
   font-weight: 800;
-  font-size: 13px;
+  font-size: 12px;
   cursor: pointer;
 }
 
@@ -837,19 +927,19 @@ html, body {
 
 .templates-gallery-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
-  gap: 12px;
-  padding-bottom: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px;
+  padding-bottom: 32px;
 }
 
 .tpl-card {
   background: #FFFFFF;
-  border-radius: 18px;
-  padding: 10px;
+  border-radius: 16px;
+  padding: 9px;
   border: 2px solid #E2E8F0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
   cursor: pointer;
-  transition: transform 0.18s, border-color 0.18s;
+  transition: transform 0.15s, border-color 0.15s;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -857,7 +947,7 @@ html, body {
 }
 
 .tpl-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-3px);
   border-color: var(--primary);
 }
 
@@ -865,9 +955,9 @@ html, body {
   width: 100%;
   aspect-ratio: 1 / 1;
   background: #FFF9FB;
-  border-radius: 12px;
+  border-radius: 10px;
   overflow: hidden;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   border: 1px solid #FCE7F3;
 }
 
@@ -877,33 +967,33 @@ html, body {
 }
 
 .tpl-card-title {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 900;
 }
 
 .tpl-card-en {
-  font-size: 11px;
+  font-size: 10.5px;
   color: var(--text-muted);
   margin-bottom: 6px;
 }
 
 /* ==========================================================================
-   🎮 分頁 3：5大創意藝術與色彩益智小遊戲樂園
+   🎮 分頁 3：5大創意藝術與色彩益智小遊戲樂園 (支援平板自適應與順暢捲動)
    ========================================================================== */
 .games-selector-bar {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 8px;
-  margin-bottom: 12px;
+  gap: 6px;
+  margin-bottom: 10px;
   flex-shrink: 0;
 }
 
 .game-tab-btn {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px;
-  border-radius: 16px;
+  gap: 6px;
+  padding: 8px;
+  border-radius: 14px;
   border: 2px solid #E2E8F0;
   background: #FFFFFF;
   cursor: pointer;
@@ -911,46 +1001,44 @@ html, body {
 }
 
 .game-tab-btn span {
-  font-size: 24px;
+  font-size: 20px;
 }
 
 .game-tab-btn strong {
   display: block;
-  font-size: 13px;
+  font-size: 12px;
   color: var(--text-dark);
 }
 
 .game-tab-btn small {
-  font-size: 11px;
+  font-size: 10px;
   color: var(--text-muted);
 }
 
 .game-tab-btn.active {
   background: #EEF2FF;
   border-color: #6366F1;
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+  box-shadow: 0 3px 10px rgba(99, 102, 241, 0.18);
 }
 
 .minigame-stage {
   display: none;
-  flex: 1;
-  min-height: 0;
+  flex-shrink: 0;
+  padding-bottom: 24px;
 }
 
 .minigame-stage.active {
-  display: flex;
-  flex-direction: column;
+  display: block;
 }
 
 .minigame-split {
   display: grid;
-  grid-template-columns: 1fr 460px;
-  gap: 16px;
+  grid-template-columns: 1fr 370px;
+  gap: 14px;
   background: #FFFFFF;
-  padding: 16px;
+  padding: 14px;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-soft);
-  flex: 1;
   align-items: center;
 }
 
@@ -959,30 +1047,37 @@ html, body {
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 8px;
+  gap: 6px;
+  margin-bottom: 6px;
 }
 
 .mg-desc {
-  font-size: 13px;
+  font-size: 12.5px;
   color: var(--text-muted);
-  line-height: 1.5;
-  margin-bottom: 12px;
+  line-height: 1.45;
+  margin-bottom: 10px;
 }
 
-.chip-group, .mg-controls {
+.mg-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+
+.chip-group, .mg-controls, .mg-action-row {
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
 }
 
 .mg-chip {
-  padding: 7px 12px;
+  padding: 6px 11px;
   border-radius: 99px;
-  border: 2px solid #CBD5E1;
+  border: 1.5px solid #CBD5E1;
   background: #F8FAFC;
   font-weight: 800;
-  font-size: 12px;
+  font-size: 11.5px;
   cursor: pointer;
 }
 
@@ -996,45 +1091,45 @@ html, body {
 .num-game-palette {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-  margin: 12px 0;
+  gap: 8px;
+  margin: 10px 0;
 }
 
 .num-ball-btn {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px;
-  border-radius: 14px;
-  border: 3px solid rgba(0,0,0,0.15);
+  gap: 6px;
+  padding: 8px;
+  border-radius: 12px;
+  border: 2.5px solid rgba(0,0,0,0.15);
   color: #FFF;
   font-weight: 900;
-  font-size: 16px;
+  font-size: 14px;
   cursor: pointer;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.45);
+  text-shadow: 0 1px 2px rgba(0,0,0,0.45);
 }
 
 .num-ball-btn.active {
-  transform: scale(1.06);
+  transform: scale(1.05);
   border-color: #2C3E50;
-  box-shadow: 0 6px 14px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.18);
 }
 
 .num-progress-box {
   background: #F8FAFC;
-  padding: 10px 14px;
-  border-radius: 14px;
+  padding: 8px 12px;
+  border-radius: 12px;
   border: 1px solid #E2E8F0;
-  font-size: 13px;
+  font-size: 12px;
 }
 
 .progress-bar-bg {
   width: 100%;
-  height: 12px;
+  height: 10px;
   background: #E2E8F0;
   border-radius: 99px;
   overflow: hidden;
-  margin-top: 6px;
+  margin-top: 5px;
 }
 
 .progress-bar-fill {
@@ -1051,77 +1146,83 @@ html, body {
 
 .num-game-svg-board {
   position: relative;
-  width: 420px;
-  height: 420px;
-  border-radius: 20px;
+  width: min(100%, 350px);
+  aspect-ratio: 1 / 1;
+  border-radius: 18px;
   border: 4px solid #CBD5E1;
   overflow: hidden;
   background: #FFF;
 }
 
+.num-game-svg-board svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
 /* 萬花筒畫布 */
 .mandala-canvas {
-  width: 420px;
-  height: 420px;
+  width: min(100%, 350px);
+  aspect-ratio: 1 / 1;
   background: radial-gradient(circle at center, #1E1B4B 0%, #0F172A 100%);
-  border-radius: 22px;
+  border-radius: 18px;
   border: 4px solid #6366F1;
-  box-shadow: 0 0 24px rgba(99, 102, 241, 0.35);
+  box-shadow: 0 0 20px rgba(99, 102, 241, 0.35);
   cursor: crosshair;
   touch-action: none;
 }
 
 .mandala-color-bar {
   display: flex;
-  gap: 8px;
+  gap: 7px;
   flex-wrap: wrap;
-  margin-top: 8px;
+  margin-top: 6px;
 }
 
 .mini-color-dot {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
-  border: 3px solid rgba(255,255,255,0.6);
+  border: 2.5px solid rgba(255,255,255,0.6);
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
 .mini-color-dot.active {
-  transform: scale(1.18);
+  transform: scale(1.16);
   border-color: #2C3E50;
 }
 
 /* 像素拼豆 12x12 網格 */
 .pixel-grid-board {
-  width: 410px;
-  height: 410px;
+  width: min(100%, 350px);
+  aspect-ratio: 1 / 1;
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   grid-template-rows: repeat(12, 1fr);
-  gap: 3px;
-  padding: 10px;
+  gap: 2.5px;
+  padding: 8px;
   background: #CBD5E1;
-  border-radius: 18px;
+  border-radius: 16px;
   touch-action: none;
 }
 
 .pixel-cell {
   background: #FFFFFF;
-  border-radius: 5px;
+  border-radius: 4px;
   cursor: pointer;
-  box-shadow: inset 0 -2px 0 rgba(0,0,0,0.08);
+  box-shadow: inset 0 -1.5px 0 rgba(0,0,0,0.08);
 }
 
 /* 色彩魔法調色實驗室 */
 .mixer-card-container {
   background: #FFFFFF;
   border-radius: var(--radius-lg);
-  padding: 20px;
+  padding: 16px;
   box-shadow: var(--shadow-soft);
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 14px;
 }
 
 .mixer-quest-header {
@@ -1129,54 +1230,57 @@ html, body {
   align-items: center;
   justify-content: space-between;
   background: #FFFBEB;
-  padding: 14px 18px;
-  border-radius: 16px;
+  padding: 10px 14px;
+  border-radius: 14px;
   border: 2px solid #FDE68A;
-  gap: 12px;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .quest-owl {
-  font-size: 38px;
+  font-size: 32px;
 }
 
 .mixer-score-badge {
   background: #FEF3C7;
-  padding: 8px 14px;
+  padding: 6px 12px;
   border-radius: 99px;
   font-weight: 900;
   color: #B45309;
+  font-size: 13px;
 }
 
 .mixer-lab-arena {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 32px;
-  padding: 10px;
+  gap: 24px;
+  padding: 6px;
+  flex-wrap: wrap;
 }
 
 .mixer-box {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   background: #F8FAFC;
-  padding: 18px 28px;
-  border-radius: 20px;
+  padding: 12px 22px;
+  border-radius: 16px;
   border: 2px solid #E2E8F0;
 }
 
 .potion-cup {
-  width: 110px;
-  height: 110px;
-  border-radius: 28px;
-  border: 4px solid #2C3E50;
+  width: 90px;
+  height: 90px;
+  border-radius: 22px;
+  border: 3.5px solid #2C3E50;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 44px;
-  box-shadow: inset 0 -10px 0 rgba(0,0,0,0.12);
-  transition: background 0.3s ease, transform 0.2s ease;
+  font-size: 36px;
+  box-shadow: inset 0 -8px 0 rgba(0,0,0,0.12);
+  transition: background 0.3s ease;
 }
 
 .potion-cup.empty-cup {
@@ -1184,26 +1288,26 @@ html, body {
 }
 
 .mixer-plus {
-  font-size: 36px;
+  font-size: 28px;
 }
 
 .base-paints-row {
   display: flex;
   justify-content: center;
-  gap: 12px;
+  gap: 10px;
   flex-wrap: wrap;
 }
 
 .paint-bottle-btn {
-  padding: 12px 20px;
-  border-radius: 16px;
-  border: 3px solid #2C3E50;
+  padding: 10px 16px;
+  border-radius: 14px;
+  border: 2.5px solid #2C3E50;
   background: var(--bottle-color, #FF3B30);
   color: #FFFFFF;
   font-weight: 900;
-  font-size: 15px;
+  font-size: 13.5px;
   cursor: pointer;
-  box-shadow: 0 5px 0 rgba(44, 62, 80, 0.22);
+  box-shadow: 0 4px 0 rgba(44, 62, 80, 0.2);
 }
 
 .paint-bottle-btn.reset-bottle {
@@ -1213,9 +1317,9 @@ html, body {
 /* 彩虹刮刮畫 */
 .scratch-board-wrap {
   position: relative;
-  width: 420px;
-  height: 420px;
-  border-radius: 22px;
+  width: min(100%, 350px);
+  aspect-ratio: 1 / 1;
+  border-radius: 18px;
   overflow: hidden;
   border: 4px solid #F59E0B;
 }
@@ -1250,48 +1354,48 @@ html, body {
 .gallery-top-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
-  margin-bottom: 16px;
+  gap: 12px;
+  margin-bottom: 14px;
 }
 
 .parent-report-card,
 .ipad-guide-card {
   background: #FFFFFF;
-  padding: 16px;
+  padding: 14px;
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-soft);
 }
 
 .parent-report-card h3,
 .ipad-guide-card h3 {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 900;
-  margin-bottom: 6px;
+  margin-bottom: 5px;
 }
 
 .parent-report-card p {
-  font-size: 12px;
+  font-size: 11.5px;
   color: var(--text-muted);
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .skill-bars-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .skill-row {
   display: grid;
-  grid-template-columns: 145px 1fr 42px;
+  grid-template-columns: 135px 1fr 38px;
   align-items: center;
-  gap: 8px;
-  font-size: 12px;
+  gap: 6px;
+  font-size: 11.5px;
   font-weight: 800;
 }
 
 .s-bar {
-  height: 10px;
+  height: 9px;
   background: #F1F5F9;
   border-radius: 99px;
   overflow: hidden;
@@ -1303,39 +1407,39 @@ html, body {
 }
 
 .ipad-steps {
-  padding-left: 18px;
-  font-size: 13px;
-  line-height: 1.65;
+  padding-left: 16px;
+  font-size: 12px;
+  line-height: 1.55;
   color: var(--text-dark);
 }
 
 .ipad-steps li {
-  margin-bottom: 6px;
+  margin-bottom: 5px;
 }
 
 .section-subtitle {
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 900;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .saved-gallery-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-  gap: 14px;
-  padding-bottom: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(195px, 1fr));
+  gap: 12px;
+  padding-bottom: 32px;
 }
 
 .framed-art-card {
   background: #FFFFFF;
-  border-radius: 18px;
-  padding: 12px;
-  border: 6px solid #F59E0B;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  border-radius: 16px;
+  padding: 10px;
+  border: 5px solid #F59E0B;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.07);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .framed-art-card img {
@@ -1343,27 +1447,27 @@ html, body {
   aspect-ratio: 1 / 1;
   object-fit: contain;
   background: #FFFFFF;
-  border-radius: 10px;
+  border-radius: 8px;
   border: 2px solid #FEF3C7;
 }
 
 /* 十大 APP 卡片 */
 .top10-cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 14px;
-  padding-bottom: 28px;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 12px;
+  padding-bottom: 36px;
 }
 
 .app-review-card {
   background: #FFFFFF;
-  border-radius: 18px;
-  padding: 16px;
+  border-radius: 16px;
+  padding: 14px;
   border: 2px solid #E2E8F0;
   box-shadow: var(--shadow-soft);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
 .app-rank-header {
@@ -1376,22 +1480,22 @@ html, body {
   background: linear-gradient(135deg, #FF5E7E, #FF9E00);
   color: #FFF;
   font-weight: 900;
-  padding: 4px 10px;
+  padding: 3px 9px;
   border-radius: 99px;
-  font-size: 12px;
+  font-size: 11.5px;
 }
 
 .app-origin {
-  font-size: 12px;
+  font-size: 11.5px;
   color: var(--text-muted);
   font-weight: 700;
 }
 
 .app-box-point {
-  font-size: 12.5px;
-  padding: 8px 10px;
-  border-radius: 10px;
-  line-height: 1.45;
+  font-size: 12px;
+  padding: 7px 9px;
+  border-radius: 9px;
+  line-height: 1.4;
 }
 
 .app-box-point.pro {
@@ -1420,7 +1524,7 @@ html, body {
   align-items: center;
   justify-content: center;
   z-index: 9000;
-  padding: 16px;
+  padding: 14px;
 }
 
 .modal-backdrop.hidden {
@@ -1429,51 +1533,74 @@ html, body {
 
 .certificate-dialog {
   background: #FFFBEB;
-  max-width: 520px;
+  max-width: 500px;
   width: 100%;
-  border-radius: 26px;
-  padding: 14px;
-  box-shadow: 0 24px 60px rgba(0,0,0,0.4);
+  border-radius: 24px;
+  padding: 12px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.4);
 }
 
 .cert-border {
-  border: 5px double #D97706;
-  border-radius: 18px;
-  padding: 24px;
+  border: 4px double #D97706;
+  border-radius: 16px;
+  padding: 20px;
   text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .cert-ribbon {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 900;
   color: #B45309;
 }
 
 .cert-body {
-  font-size: 15px;
-  line-height: 1.65;
+  font-size: 14px;
+  line-height: 1.6;
 }
 
 .cert-seal {
-  font-size: 32px;
+  font-size: 28px;
   color: #D97706;
-  margin: 4px 0;
 }
 
-/* 📱 響應式：針對 iPad 直向或小尺寸螢幕自動調整 */
-@media (max-width: 960px) {
+/* ==========================================================================
+   📱 針對 iPad 直向 (Portrait 744px) 與較矮橫向視窗 (Height <= 660px) 的自動自適應佈局
+   ========================================================================== */
+@media (max-width: 920px) {
+  .top-bar {
+    flex-wrap: wrap;
+    padding: 6px 10px;
+  }
+  .main-nav {
+    order: 3;
+    width: 100%;
+    justify-content: space-between;
+    padding-top: 4px;
+  }
+  /* 直向模式下：魔法畫室自動改為上下可順暢捲動配置，畫布在最上方，工具與色盤在下方，完全不遮擋！ */
   .studio-layout {
-    grid-template-columns: 1fr;
-    overflow-y: auto;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    height: auto;
+    overflow: visible;
+  }
+  .canvas-stage-area {
+    grid-column: 1 / -1;
+    order: -1;
+    height: auto;
+  }
+  .artboard-container {
+    width: min(86vw, 420px) !important;
+    height: min(86vw, 420px) !important;
   }
   .minigame-split,
   .gallery-top-grid {
     grid-template-columns: 1fr;
   }
   .games-selector-bar {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
 }
