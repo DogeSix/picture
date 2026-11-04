@@ -1,25 +1,26 @@
 /* ==========================================================================
-   🎨 彩虹魔法畫布 Rainbow Magic Canvas Pro - iPad mini 7 平板瀏覽器完美適配樣式表
-   解決 Safari 頂部網址列/書籤列與底部 Home 橫條導致下方按鈕被遮擋、無法下滑的核心問題
+   🎨 彩虹魔法畫布 Rainbow Magic Canvas Pro - iPad mini 7 旗艦自然捲動與防遮擋樣式表
+   採用與《數感奇幻島》相同的「自然文檔流 (Natural Document Flow)」架構：
+   - 徹底移除會造成平板裁切與遮擋的固定高度 (100vh/overflow:hidden)
+   - 不論 iPad Safari 上方網址列多高、直向或橫向，全頁面皆可自然上下滑動，零重疊、零遮擋！
    ========================================================================== */
 
 :root {
-  --app-height: 100dvh;
-  --bg-gradient: linear-gradient(135deg, #FFF5F8 0%, #F0F7FF 50%, #FFFBEB 100%);
-  --card-bg: #FFFFFF;
+  --bg-card: #FFFFFF;
   --primary: #FF5E7E;
-  --primary-dark: #E03E60;
+  --primary-dark: #D83A5B;
   --secondary: #3A86FF;
+  --secondary-dark: #2563EB;
   --accent-yellow: #FFBE0B;
-  --accent-green: #06D6A0;
-  --accent-purple: #8338EC;
-  --text-dark: #2C3E50;
-  --text-muted: #5C6B73;
+  --accent-green: #10B981;
+  --accent-purple: #8B5CF6;
+  --text-main: #1E293B;
+  --text-sub: #64748B;
   --border-soft: #E2E8F0;
-  --shadow-soft: 0 6px 20px rgba(44, 62, 80, 0.07);
-  --radius-lg: 18px;
-  --radius-md: 14px;
-  --safe-bottom: env(safe-area-inset-bottom, 12px);
+  --radius-xl: 20px;
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --shadow-card: 0 8px 24px rgba(38, 67, 136, 0.07);
 }
 
 * {
@@ -27,406 +28,454 @@
   margin: 0;
   padding: 0;
   -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
 }
 
 html, body {
   width: 100%;
   min-height: 100%;
-  height: var(--app-height, 100dvh);
-  font-family: "PingFang TC", "Microsoft JhengHei", "Noto Sans TC", "Rounded Mplus 1c", sans-serif;
-  background: #1A1D24;
-  color: var(--text-dark);
-  /* 允許在極端視窗下自然捲動，絕不鎖死使用者滑動手勢 */
+  font-family: "PingFang TC", "Noto Sans TC", "Microsoft JhengHei", -apple-system, BlinkMacSystemFont, sans-serif;
+  background: linear-gradient(145deg, #FFF0F5 0%, #F0F7FF 55%, #FFFDF0 100%);
+  color: var(--text-main);
   overflow-x: hidden;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
-/* 全螢幕煙火特效層 */
+/* 🎉 彩帶煙火 Canvas */
 .confetti-canvas {
   position: fixed;
   inset: 0;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   pointer-events: none;
   z-index: 9999;
 }
 
-/* 📱 iPad mini 7 外框預覽 vs 平板瀏覽器真實滿版容器 */
+/* 📱 iPad mini 7 外框預覽器 (預設滿版自然捲動；點擊「iPad mini 7 外框」時模擬 8.3" 1133×744 比例) */
 .device-wrapper {
   width: 100%;
-  height: var(--app-height, 100dvh);
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background: radial-gradient(circle at center, #2B303C 0%, #14171F 100%);
 }
 
 .ipad-bezel-header {
   display: none;
+}
+
+.device-wrapper.ipad-frame-mode {
+  background: #1A1D24;
+  padding: 16px;
   align-items: center;
-  gap: 8px;
-  color: #E2E8F0;
-  font-size: 12px;
-  margin-bottom: 6px;
-  padding: 5px 14px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 999px;
-  flex-shrink: 0;
+  justify-content: center;
 }
 
 .device-wrapper.ipad-frame-mode .ipad-bezel-header {
   display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #E2E8F0;
+  font-size: 13px;
+  margin-bottom: 10px;
+  background: #282C37;
+  padding: 6px 16px;
+  border-radius: 999px;
 }
 
 .camera-dot {
-  width: 9px;
-  height: 9px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   background: #38BDF8;
   box-shadow: 0 0 8px #38BDF8;
 }
 
-.bezel-btn {
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  background: rgba(255, 255, 255, 0.12);
-  color: #FFFFFF;
-  padding: 4px 10px;
+.bezel-orient-btn, .bezel-close-btn {
+  background: #3B82F6;
+  color: #fff;
+  border: none;
+  padding: 5px 12px;
   border-radius: 99px;
-  cursor: pointer;
-  font-size: 11.5px;
+  font-size: 12px;
   font-weight: 700;
+  cursor: pointer;
 }
 
-.bezel-btn.active {
-  background: #0EA5E9;
-  border-color: #38BDF8;
+.bezel-close-btn {
+  background: #475569;
 }
 
-.bezel-btn.primary {
-  background: var(--primary);
-  border-color: var(--primary);
-}
-
-/* 主應用容器 */
-.app-container {
-  width: 100%;
-  height: 100%;
-  background: var(--bg-gradient);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  position: relative;
-}
-
-/* 當開啟 iPad mini 7 外框模擬時：精確模擬 8.3 吋 1133×744 比例 */
 .device-wrapper.ipad-frame-mode .app-container {
-  width: min(96vw, 1133px);
-  height: min(88vh, 744px);
-  border-radius: 30px;
-  border: 12px solid #1E222B;
-  box-shadow: 0 20px 55px rgba(0, 0, 0, 0.65), 0 0 0 2px #475569;
+  width: 1133px;
+  max-width: 96vw;
+  height: 744px;
+  max-height: 88vh;
+  border: 14px solid #111318;
+  border-radius: 36px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55), 0 0 0 2px #334155;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: linear-gradient(145deg, #FFF0F5 0%, #F0F7FF 55%, #FFFDF0 100%);
 }
 
 .device-wrapper.ipad-frame-mode.portrait-mode .app-container {
-  width: min(92vw, 744px);
-  height: min(90vh, 1080px);
+  width: 744px;
+  height: 1133px;
+  max-height: 90vh;
 }
 
-/* 🌐 模擬 iPad Safari 頂部狀態列＋網址分頁列 (約 68px 高，驗證不遮擋下方按鈕) */
-.safari-mock-bar {
-  display: none;
+/* 主應用容器：自然高度、底部預留 48px 安全留白，確保滑到底部時所有按鈕一目了然 */
+.app-container {
+  width: 100%;
+  max-width: 1340px;
+  margin: 0 auto;
+  padding: 10px 14px calc(44px + env(safe-area-inset-bottom, 16px));
+  display: flex;
   flex-direction: column;
-  background: #F1F5F9;
-  border-bottom: 1px solid #CBD5E1;
-  padding: 4px 14px 6px;
-  gap: 4px;
-  flex-shrink: 0;
-  font-size: 11px;
-  color: #475569;
-}
-
-.device-wrapper.ipad-frame-mode.sim-safari-bar .safari-mock-bar {
-  display: flex;
-}
-
-.safari-status-row {
-  display: flex;
-  justify-content: space-between;
-  font-weight: 700;
-  font-size: 10.5px;
-}
-
-.safari-address-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   gap: 10px;
 }
 
-.safari-url-box {
-  flex: 1;
-  max-width: 520px;
-  background: #FFFFFF;
-  border: 1px solid #CBD5E1;
-  border-radius: 8px;
-  padding: 4px 12px;
-  text-align: center;
-  font-weight: 700;
-  color: #1E293B;
-  font-size: 11.5px;
-}
-
-.safari-nav-icons {
-  font-size: 13px;
-  letter-spacing: 4px;
-}
-
 /* ==========================================================================
-   🌟 超精簡一體化頂部導覽列 (Unified Compact Header - 僅 48px 高！)
+   🌟 頂部狀態與快速控制列 (自動彈性換行 flex-wrap，絕不擠壓重疊)
    ========================================================================== */
 .top-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 5px 12px;
+  flex-wrap: wrap;
+  gap: 10px;
   background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  border-bottom: 2px solid #FFE4EC;
-  gap: 8px;
-  flex-shrink: 0;
-  min-height: 48px;
+  padding: 10px 16px;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+  border: 2px solid #FFE4EC;
 }
 
 .brand-group {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 10px;
   cursor: pointer;
-  flex-shrink: 0;
 }
 
 .brand-logo {
-  width: 34px;
-  height: 34px;
-  border-radius: 10px;
+  font-size: 28px;
   background: linear-gradient(135deg, #FF5E7E, #FFBE0B);
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 19px;
-  box-shadow: 0 3px 8px rgba(255, 94, 126, 0.28);
+  box-shadow: 0 4px 12px rgba(255, 94, 126, 0.28);
+  flex-shrink: 0;
 }
 
 .brand-titles h1 {
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 900;
-  color: var(--text-dark);
+  color: var(--text-main);
   display: flex;
   align-items: center;
-  gap: 5px;
-  white-space: nowrap;
+  gap: 8px;
+  flex-wrap: wrap;
 }
 
-.badge-ipad {
-  font-size: 10px;
-  background: linear-gradient(135deg, #3A86FF, #8338EC);
-  color: #FFF;
-  padding: 2px 6px;
+.badge-pro {
+  background: linear-gradient(90deg, #3A86FF, #8B5CF6);
+  color: #fff;
+  font-size: 11px;
+  padding: 2px 8px;
   border-radius: 99px;
   font-weight: 700;
 }
 
-/* 🧭 整合式五大主功能導覽列 */
-.main-nav {
+.brand-titles p {
+  font-size: 12px;
+  color: var(--text-sub);
+  margin-top: 2px;
+}
+
+.stats-pills {
   display: flex;
   align-items: center;
-  gap: 5px;
-  flex: 1;
-  justify-content: center;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.main-nav::-webkit-scrollbar {
-  display: none;
-}
-
-.nav-tab {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 6px 10px;
-  border-radius: 11px;
-  border: 2px solid #F1F5F9;
-  background: #FFFFFF;
-  color: var(--text-dark);
-  font-size: 12.5px;
-  font-weight: 800;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.15s;
-}
-
-.nav-tab .tab-icon {
-  font-size: 15px;
-}
-
-.nav-tab.active {
-  background: linear-gradient(135deg, #FF5E7E, #FF85A1);
-  color: #FFFFFF;
-  border-color: #FF3B66;
-  box-shadow: 0 3px 10px rgba(255, 94, 126, 0.3);
-}
-
-/* 右側快捷控制膠囊 */
-.quick-controls {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  flex-shrink: 0;
+  gap: 8px;
 }
 
 .stat-pill {
   display: flex;
   align-items: center;
-  gap: 3px;
-  padding: 4px 9px;
-  border-radius: 99px;
-  font-weight: 900;
-  font-size: 12px;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 13px;
   cursor: pointer;
-  border: 2px solid #FFD43B;
-  background: #FFF9DB;
-  color: #D97706;
 }
 
-.ctrl-chip {
-  padding: 5px 8px;
-  border-radius: 99px;
-  border: 1.5px solid #E2E8F0;
-  background: #FFFFFF;
-  color: var(--text-dark);
-  font-size: 11.5px;
+.star-pill {
+  background: #FFF8DB;
+  color: #B45309;
+  border: 2px solid #FDE047;
+}
+
+.art-pill {
+  background: #DCFCE7;
+  color: #15803D;
+  border: 2px solid #86EFAC;
+}
+
+.quick-toggles {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.toggle-chip {
+  border: 2px solid #CBD5E1;
+  background: #F8FAFC;
+  color: #334155;
+  padding: 6px 11px;
+  border-radius: 12px;
+  font-size: 12px;
   font-weight: 800;
   cursor: pointer;
-  white-space: nowrap;
+  transition: all 0.15s;
 }
 
-.ctrl-chip.active {
-  background: #EEF2FF;
-  border-color: #6366F1;
-  color: #4338CA;
+.toggle-chip.active {
+  background: #FFE4EC;
+  border-color: var(--primary);
+  color: #BE123C;
 }
 
-.ctrl-chip.ipad-highlight {
-  background: linear-gradient(135deg, #FF5E7E, #FF9E00);
-  color: #FFFFFF;
-  border: none;
+.toggle-chip.ipad-chip {
+  background: #1E293B;
+  color: #F8FAFC;
+  border-color: #0F172A;
 }
 
 /* ==========================================================================
-   📦 分頁容器 (確保每個分頁在平板上都能完整顯示或順暢上下滑動)
+   🧭 五大主功能導覽列 (大按鈕立體設計，平板大拇指一按即切)
    ========================================================================== */
+.main-nav {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 50px;
+  background: #FFFFFF;
+  border: 2px solid #E2E8F0;
+  border-radius: 15px;
+  cursor: pointer;
+  font-weight: 800;
+  color: #334155;
+  box-shadow: 0 4px 0 #CBD5E1;
+  transition: transform 0.1s, background 0.15s;
+  padding: 6px 8px;
+}
+
+.nav-btn:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #CBD5E1;
+}
+
+.nav-btn.active {
+  background: linear-gradient(135deg, #FF5E7E, #FF85A1);
+  color: #FFFFFF;
+  border-color: #E11D48;
+  box-shadow: 0 4px 0 #BE123C;
+}
+
+.nav-icon {
+  font-size: 20px;
+}
+
+.nav-text {
+  font-size: 13.5px;
+  text-align: center;
+}
+
+/* 📦 主內容區 (自然文檔流，完全不裁切內容) */
+.main-stage {
+  width: 100%;
+}
+
 .tab-panel {
   display: none;
-  flex: 1;
-  min-height: 0;
-  padding: 8px 10px calc(8px + var(--safe-bottom));
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  touch-action: pan-y;
 }
 
 .tab-panel.active {
-  display: flex;
-  flex-direction: column;
+  display: block;
+}
+
+.hidden {
+  display: none !important;
 }
 
 /* ==========================================================================
-   🖌️ 分頁 1：魔法填色畫室 (專為平板 Safari 最佳化：三欄緊湊高密度 + 獨立捲動)
+   🖌️ 分頁 1：魔法填色畫室 (清晰分離頂部故事橫幅 + 三欄工作台)
    ========================================================================== */
-.studio-layout {
-  display: grid;
-  grid-template-columns: 205px 1fr 215px;
-  gap: 8px;
+.studio-header-banner {
+  background: #FFFFFF;
+  border: 2px solid #FFE4EC;
+  border-radius: var(--radius-xl);
+  padding: 10px 16px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  box-shadow: var(--shadow-card);
+}
+
+.tpl-info-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
   flex: 1;
-  min-height: 0;
-  height: 100%;
+  min-width: 240px;
+}
+
+.tpl-badge-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: #FFF0F3;
+  border: 2px solid #FECDD3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  flex-shrink: 0;
+}
+
+.tpl-info-texts h2 {
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--text-main);
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tpl-info-texts h2 small {
+  font-size: 12px;
+  color: var(--secondary);
+  font-weight: 800;
+}
+
+.tpl-info-texts p {
+  font-size: 12.5px;
+  color: var(--text-sub);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+.tpl-info-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.banner-chip {
+  padding: 8px 13px;
+  border-radius: 12px;
+  border: 2px solid #E2E8F0;
+  background: #F8FAFC;
+  color: var(--text-main);
+  font-size: 12.5px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 3px 0 #CBD5E1;
+}
+
+.banner-chip.active {
+  background: #FEF3C7;
+  border-color: #F59E0B;
+  color: #B45309;
+}
+
+.banner-chip.magic {
+  background: linear-gradient(135deg, #A855F7, #EC4899);
+  color: #FFFFFF;
+  border-color: #9333EA;
+  box-shadow: 0 3px 0 #7E22CE;
+}
+
+/* 三欄式畫室工作台：左工具 (235px) + 中畫布 (1fr) + 右色盤 (245px) */
+.studio-workbench {
+  display: grid;
+  grid-template-columns: 235px minmax(320px, 1fr) 245px;
+  gap: 12px;
+  align-items: start;
 }
 
 /* 左撇子鏡像模式 */
-.studio-layout.left-handed {
+.studio-workbench.left-handed {
   direction: rtl;
 }
-.studio-layout.left-handed > * {
+.studio-workbench.left-handed > * {
   direction: ltr;
 }
 
-.tools-sidebar,
-.palette-sidebar {
+.workbench-panel {
   background: #FFFFFF;
-  border-radius: var(--radius-lg);
-  padding: 8px;
-  box-shadow: var(--shadow-soft);
-  border: 2px solid #F1F5F9;
+  border-radius: var(--radius-xl);
+  padding: 12px;
+  border: 2px solid #E2E8F0;
+  box-shadow: var(--shadow-card);
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  min-height: 0;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  touch-action: pan-y;
+  gap: 10px;
 }
 
-/* 🔥 置頂動作按鈕：復原、自動配色、清空重畫放最上面，絕不會被下方遮住 */
-.sticky-top-actions {
-  position: sticky;
-  top: 0;
-  z-index: 5;
-  background: #FFFFFF;
-  padding-bottom: 4px;
-  border-bottom: 1px dashed #E2E8F0;
+.panel-box-title {
+  font-size: 12px;
+  font-weight: 900;
+  color: #475569;
 }
 
-.action-buttons-stack {
+/* 左欄頂部快速動作鍵 */
+.quick-action-row {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 4px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
 }
 
-.act-btn {
-  padding: 6px 4px;
+.q-act-btn {
+  padding: 8px 4px;
   border-radius: 10px;
   border: none;
-  font-size: 11px;
+  color: #FFFFFF;
+  font-size: 12px;
   font-weight: 800;
   cursor: pointer;
-  color: #FFF;
-  white-space: nowrap;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.18);
 }
 
-.undo-btn {
-  background: #3B82F6;
-}
-.magic-btn {
-  background: linear-gradient(135deg, #8B5CF6, #EC4899);
-}
-.clear-btn {
-  background: #64748B;
-}
-
-.sidebar-section-title {
-  font-size: 11px;
-  font-weight: 900;
-  color: #64748B;
-  margin-top: 2px;
-}
+.q-act-btn.undo { background: #3B82F6; }
+.q-act-btn.auto { background: linear-gradient(135deg, #8B5CF6, #EC4899); }
+.q-act-btn.clear { background: #64748B; }
 
 .tool-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 5px;
+  gap: 7px;
 }
 
 .tool-btn {
@@ -434,72 +483,70 @@ html, body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 2px;
-  padding: 6px 4px;
-  border-radius: 11px;
+  gap: 3px;
+  padding: 9px 6px;
+  border-radius: 13px;
   border: 2px solid #E2E8F0;
   background: #F8FAFC;
   cursor: pointer;
-  transition: all 0.12s;
+  transition: all 0.15s;
 }
 
 .tool-btn .t-icon {
-  font-size: 18px;
+  font-size: 22px;
 }
 
 .tool-btn .t-name {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
-  color: var(--text-dark);
+  color: var(--text-main);
 }
 
 .tool-btn.active {
   background: #FFF0F3;
   border-color: var(--primary);
-  box-shadow: 0 3px 8px rgba(255, 94, 126, 0.22);
+  box-shadow: 0 4px 10px rgba(255, 94, 126, 0.22);
 }
 
-.brush-size-box {
+.brush-size-card {
   background: #F8FAFC;
-  padding: 6px 8px;
-  border-radius: 10px;
-  border: 1px solid #E2E8F0;
-  font-size: 11px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1.5px solid #E2E8F0;
+}
+
+.brush-size-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
   font-weight: 800;
 }
 
-.brush-size-header {
-  display: flex;
-  justify-content: space-between;
-}
-
-.brush-size-box input[type="range"] {
+.brush-size-card input[type="range"] {
   width: 100%;
-  margin-top: 3px;
+  margin-top: 6px;
   accent-color: var(--primary);
 }
 
-.stamp-drawer {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
+/* 貼紙印章網格 */
 .stamp-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 3px;
-  padding: 4px;
+  gap: 5px;
+  max-height: 155px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 6px;
   background: #F8FAFC;
-  border-radius: 10px;
-  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  border: 1.5px solid #E2E8F0;
 }
 
 .stamp-item-btn {
-  font-size: 16px;
-  height: 28px;
-  border-radius: 7px;
-  border: 1.5px solid transparent;
+  font-size: 18px;
+  height: 34px;
+  border-radius: 8px;
+  border: 2px solid transparent;
   background: #FFFFFF;
   cursor: pointer;
   display: flex;
@@ -513,139 +560,34 @@ html, body {
   transform: scale(1.08);
 }
 
-/* ==========================================================================
-   🖼️ 中央畫布舞台區：自適應彈性縮放，100% 保證底部切換與儲存按鈕永遠可見！
-   ========================================================================== */
-.canvas-stage-area {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  background: #FFFFFF;
-  border-radius: var(--radius-lg);
-  padding: 7px 10px;
-  box-shadow: var(--shadow-soft);
-  border: 2px solid #FFE4EC;
-  min-height: 0;
-  height: 100%;
-  overflow: hidden;
-}
-
-.canvas-top-banner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 6px;
-  padding-bottom: 5px;
-  border-bottom: 1.5px dashed #F1F5F9;
-  flex-shrink: 0;
-}
-
-.template-info-badge {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  min-width: 0;
-  flex: 1;
-}
-
-.tpl-emoji {
-  font-size: 24px;
-  background: #FFF5F8;
-  width: 38px;
-  height: 38px;
-  border-radius: 11px;
-  display: flex;
+/* 中央畫布舞台與正下方控制列 */
+.canvas-center-panel {
   align-items: center;
   justify-content: center;
-  border: 1.5px solid #FECDD3;
-  flex-shrink: 0;
+  border-color: #FFCAD4;
+  padding: 14px;
 }
 
-.tpl-text-wrap {
-  min-width: 0;
-  flex: 1;
-}
-
-.template-info-badge h2 {
-  font-size: 14px;
-  font-weight: 900;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.template-info-badge h2 small {
-  font-size: 11px;
-  color: var(--secondary);
-  margin-left: 4px;
-}
-
-.template-info-badge p {
-  font-size: 11px;
-  color: var(--text-muted);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.canvas-stage-Buttons {
-  display: flex;
-  gap: 4px;
-  flex-shrink: 0;
-}
-
-.stage-chip {
-  padding: 5px 8px;
-  border-radius: 99px;
-  border: 1.5px solid #E2E8F0;
-  background: #F8FAFC;
-  font-size: 11px;
-  font-weight: 800;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.stage-chip.active {
-  background: #FEF3C7;
-  border-color: #F59E0B;
-  color: #B45309;
-}
-
-.stage-chip.magic-dance {
-  background: linear-gradient(135deg, #A855F7, #EC4899);
-  color: #FFF;
-  border: none;
-}
-
-/* 畫布外框：利用 flex:1 與 min-height:0 搭配 JS ResizeObserver 動態計算最佳正方形尺寸 */
-.canvas-frame-outer {
-  flex: 1;
-  min-height: 0;
+.artboard-wrap {
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4px;
-  overflow: hidden;
 }
 
 .artboard-container {
   position: relative;
-  width: var(--board-size, 360px);
-  height: var(--board-size, 360px);
-  max-width: 100%;
-  max-height: 100%;
+  width: min(100%, 440px);
   aspect-ratio: 1 / 1;
   background: #FFFFFF;
-  border-radius: 20px;
-  border: 4px solid #FFCAD4;
-  box-shadow: 0 6px 20px rgba(255, 94, 126, 0.15);
+  border-radius: 22px;
+  border: 5px solid #FFCAD4;
+  box-shadow: 0 10px 26px rgba(255, 94, 126, 0.16);
   overflow: hidden;
+  /* 僅在畫布內部鎖定觸控手勢供繪畫使用，畫布外皆可自然上下滑動頁面！ */
   touch-action: none;
 }
 
-/* 魔法復活跳舞動畫 */
 @keyframes characterDance {
   0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
   25% { transform: translateY(-10px) rotate(-3deg) scale(1.04); }
@@ -676,7 +618,6 @@ html, body {
   transition: fill 0.16s ease;
 }
 
-/* 數字密碼浮層 */
 .number-guide-overlay {
   position: absolute;
   inset: 0;
@@ -684,28 +625,23 @@ html, body {
   z-index: 4;
 }
 
-.number-guide-overlay.hidden {
-  display: none;
-}
-
 .num-badge-dot {
   position: absolute;
   transform: translate(-50%, -50%);
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.92);
-  border: 2px solid #2C3E50;
-  color: #2C3E50;
-  font-size: 11px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 2px solid #1E293B;
+  color: #1E293B;
+  font-size: 12px;
   font-weight: 900;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.18);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
-/* 上層手繪與貼紙 Canvas */
 .drawing-canvas {
   position: absolute;
   inset: 0;
@@ -719,203 +655,189 @@ html, body {
   pointer-events: none;
 }
 
-/* 畫布底部快速切換與裝裱儲存列 (flex-shrink:0 確保永遠不被壓縮或遮擋！) */
-.canvas-bottom-bar {
+/* 畫布底部控制列：彈性換行、大尺寸防誤觸、絕不重疊或裁切 */
+.canvas-footer-controls {
+  width: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 6px;
-  padding-top: 6px;
-  border-top: 1.5px dashed #F1F5F9;
-  flex-shrink: 0;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+  padding-top: 10px;
+  border-top: 2px dashed #F1F5F9;
 }
 
-.bottom-nav-btn {
-  padding: 7px 10px;
-  border-radius: 10px;
-  border: 1.5px solid #CBD5E1;
+.c-nav-btn {
+  padding: 10px 14px;
+  border-radius: 13px;
+  border: 2px solid #CBD5E1;
   background: #F8FAFC;
+  color: var(--text-main);
+  font-size: 13px;
   font-weight: 800;
-  font-size: 12px;
   cursor: pointer;
-  white-space: nowrap;
+  box-shadow: 0 3px 0 #CBD5E1;
 }
 
-.bottom-nav-btn.pick-btn {
+.c-nav-btn.highlight {
   background: #EFF6FF;
   border-color: #93C5FD;
   color: #1D4ED8;
 }
 
-.bottom-save-btn {
-  flex: 1;
-  max-width: 230px;
-  padding: 7px 12px;
-  border-radius: 11px;
+.c-save-btn {
+  padding: 10px 18px;
+  border-radius: 13px;
   border: none;
   background: linear-gradient(135deg, #10B981, #059669);
   color: #FFFFFF;
+  font-size: 13.5px;
   font-weight: 900;
-  font-size: 12px;
   cursor: pointer;
-  box-shadow: 0 3px 10px rgba(16, 185, 129, 0.28);
-  white-space: nowrap;
+  box-shadow: 0 4px 0 #047857;
 }
 
-/* 右側：24色兒童美學色盤 + 6款漸層漆 */
-.current-color-preview {
+/* 右側色盤欄 */
+.current-color-box {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 6px 8px;
+  gap: 10px;
+  padding: 8px 10px;
   background: #F8FAFC;
-  border-radius: 11px;
-  border: 1.5px solid #E2E8F0;
-  flex-shrink: 0;
+  border-radius: 13px;
+  border: 2px solid #E2E8F0;
 }
 
 .active-swatch {
-  width: 30px;
-  height: 30px;
-  border-radius: 9px;
-  border: 2.5px solid #2C3E50;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 3px solid #1E293B;
   flex-shrink: 0;
 }
 
-.active-color-meta {
+.active-color-info {
   display: flex;
   flex-direction: column;
-  font-size: 12px;
 }
 
-.meta-label {
-  font-size: 10px;
-  color: var(--text-muted);
+.active-color-info span {
+  font-size: 11px;
+  color: var(--text-sub);
+}
+
+.active-color-info strong {
+  font-size: 13.5px;
 }
 
 .palette-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 5px;
+  gap: 7px;
 }
 
 .color-swatch-btn {
-  height: 30px;
-  border-radius: 9px;
-  border: 2px solid rgba(44, 62, 80, 0.2);
+  height: 36px;
+  border-radius: 10px;
+  border: 2.5px solid rgba(30, 41, 59, 0.2);
   cursor: pointer;
   transition: transform 0.12s;
 }
 
 .color-swatch-btn.active {
   transform: scale(1.1);
-  border-color: #2C3E50;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+  border-color: #1E293B;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.22);
 }
 
 .gradient-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 5px;
+  gap: 6px;
 }
 
 .gradient-swatch-btn {
-  padding: 6px 4px;
-  border-radius: 8px;
-  border: 1.5px solid rgba(44, 62, 80, 0.2);
+  padding: 8px 6px;
+  border-radius: 10px;
+  border: 2px solid rgba(30, 41, 59, 0.2);
   color: #FFFFFF;
-  font-size: 10.5px;
+  font-size: 11.5px;
   font-weight: 900;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
   cursor: pointer;
 }
 
 .gradient-swatch-btn.active {
-  border-color: #2C3E50;
+  border-color: #1E293B;
   transform: scale(1.04);
 }
 
 /* ==========================================================================
-   📚 分頁 2：54款塗鴉公版庫 (支援平板手指慣性捲動與底部安全區留白)
+   📚 分頁 2：54款塗鴉公版庫
    ========================================================================== */
-.scrollable-panel {
-  overflow-y: auto !important;
-  -webkit-overflow-scrolling: touch;
-  padding-bottom: calc(36px + var(--safe-bottom));
-}
-
-.panel-header-card {
+.section-banner-card {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #FFFFFF;
-  padding: 12px 16px;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-soft);
-  margin-bottom: 10px;
-  gap: 10px;
   flex-wrap: wrap;
-  flex-shrink: 0;
+  gap: 12px;
+  background: #FFFFFF;
+  padding: 14px 18px;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+  border: 2px solid #E2E8F0;
+  margin-bottom: 12px;
 }
 
-.panel-header-card h2 {
-  font-size: 17px;
+.section-banner-card h2 {
+  font-size: 18px;
   font-weight: 900;
 }
 
-.panel-header-card p {
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-top: 2px;
+.section-banner-card p {
+  font-size: 13px;
+  color: var(--text-sub);
+  margin-top: 3px;
 }
 
 .primary-pill-btn {
-  padding: 8px 16px;
+  padding: 10px 18px;
   border-radius: 99px;
   border: none;
   background: linear-gradient(135deg, #FF5E7E, #FF9E00);
   color: #FFFFFF;
   font-weight: 900;
-  font-size: 13px;
+  font-size: 13.5px;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(255, 94, 126, 0.28);
+  box-shadow: 0 4px 12px rgba(255, 94, 126, 0.3);
 }
 
 .secondary-pill-btn {
-  padding: 8px 14px;
+  padding: 10px 16px;
   border-radius: 99px;
   border: 2px solid #CBD5E1;
   background: #FFFFFF;
-  color: var(--text-dark);
+  color: var(--text-main);
   font-weight: 800;
-  font-size: 12.5px;
+  font-size: 13px;
   cursor: pointer;
 }
 
 .category-filter-bar {
   display: flex;
-  gap: 6px;
+  gap: 8px;
   flex-wrap: wrap;
-  margin-bottom: 10px;
-  flex-shrink: 0;
-}
-
-.sticky-subbar {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: rgba(248, 250, 252, 0.92);
-  backdrop-filter: blur(8px);
-  padding: 6px 0;
+  margin-bottom: 12px;
 }
 
 .cat-pill-btn {
-  padding: 7px 12px;
+  padding: 8px 14px;
   border-radius: 99px;
-  border: 2px solid #E2E8F0;
+  border: 2px solid #CBD5E1;
   background: #FFFFFF;
   font-weight: 800;
-  font-size: 12px;
+  font-size: 13px;
   cursor: pointer;
 }
 
@@ -927,37 +849,35 @@ html, body {
 
 .templates-gallery-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 10px;
-  padding-bottom: 32px;
+  grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+  gap: 12px;
 }
 
 .tpl-card {
   background: #FFFFFF;
-  border-radius: 16px;
-  padding: 9px;
+  border-radius: 18px;
+  padding: 10px;
   border: 2px solid #E2E8F0;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-card);
   cursor: pointer;
-  transition: transform 0.15s, border-color 0.15s;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
+  transition: transform 0.15s;
 }
 
-.tpl-card:hover {
-  transform: translateY(-3px);
-  border-color: var(--primary);
+.tpl-card:active {
+  transform: scale(0.97);
 }
 
 .tpl-thumb-box {
   width: 100%;
   aspect-ratio: 1 / 1;
   background: #FFF9FB;
-  border-radius: 10px;
+  border-radius: 12px;
   overflow: hidden;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
   border: 1px solid #FCE7F3;
 }
 
@@ -967,64 +887,62 @@ html, body {
 }
 
 .tpl-card-title {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 900;
 }
 
 .tpl-card-en {
-  font-size: 10.5px;
-  color: var(--text-muted);
-  margin-bottom: 6px;
+  font-size: 11px;
+  color: var(--text-sub);
+  margin-bottom: 8px;
 }
 
 /* ==========================================================================
-   🎮 分頁 3：5大創意藝術與色彩益智小遊戲樂園 (支援平板自適應與順暢捲動)
+   🎮 分頁 3：5大創意藝術小遊戲
    ========================================================================== */
 .games-selector-bar {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 6px;
-  margin-bottom: 10px;
-  flex-shrink: 0;
+  grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
+  gap: 8px;
+  margin-bottom: 12px;
 }
 
 .game-tab-btn {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px;
-  border-radius: 14px;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 15px;
   border: 2px solid #E2E8F0;
   background: #FFFFFF;
   cursor: pointer;
   text-align: left;
+  box-shadow: 0 3px 0 #CBD5E1;
 }
 
 .game-tab-btn span {
-  font-size: 20px;
+  font-size: 24px;
 }
 
 .game-tab-btn strong {
   display: block;
-  font-size: 12px;
-  color: var(--text-dark);
+  font-size: 13px;
+  color: var(--text-main);
 }
 
 .game-tab-btn small {
-  font-size: 10px;
-  color: var(--text-muted);
+  font-size: 11px;
+  color: var(--text-sub);
 }
 
 .game-tab-btn.active {
   background: #EEF2FF;
   border-color: #6366F1;
-  box-shadow: 0 3px 10px rgba(99, 102, 241, 0.18);
+  box-shadow: 0 3px 0 #4F46E5;
 }
 
 .minigame-stage {
   display: none;
-  flex-shrink: 0;
-  padding-bottom: 24px;
 }
 
 .minigame-stage.active {
@@ -1033,12 +951,13 @@ html, body {
 
 .minigame-split {
   display: grid;
-  grid-template-columns: 1fr 370px;
-  gap: 14px;
+  grid-template-columns: 1fr minmax(300px, 420px);
+  gap: 16px;
   background: #FFFFFF;
-  padding: 14px;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-soft);
+  padding: 16px;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+  border: 2px solid #E2E8F0;
   align-items: center;
 }
 
@@ -1047,37 +966,37 @@ html, body {
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 6px;
+  gap: 8px;
+  margin-bottom: 8px;
 }
 
 .mg-desc {
-  font-size: 12.5px;
-  color: var(--text-muted);
-  line-height: 1.45;
-  margin-bottom: 10px;
+  font-size: 13px;
+  color: var(--text-sub);
+  line-height: 1.5;
+  margin-bottom: 12px;
 }
 
 .mg-label {
   display: block;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 800;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 
 .chip-group, .mg-controls, .mg-action-row {
   display: flex;
-  gap: 6px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
 .mg-chip {
-  padding: 6px 11px;
+  padding: 8px 13px;
   border-radius: 99px;
-  border: 1.5px solid #CBD5E1;
+  border: 2px solid #CBD5E1;
   background: #F8FAFC;
   font-weight: 800;
-  font-size: 11.5px;
+  font-size: 12.5px;
   cursor: pointer;
 }
 
@@ -1087,49 +1006,48 @@ html, body {
   border-color: var(--primary);
 }
 
-/* 數字填色色球列 */
 .num-game-palette {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 8px;
-  margin: 10px 0;
+  margin: 12px 0;
 }
 
 .num-ball-btn {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 8px;
-  border-radius: 12px;
-  border: 2.5px solid rgba(0,0,0,0.15);
+  padding: 10px;
+  border-radius: 13px;
+  border: 2.5px solid rgba(0, 0, 0, 0.15);
   color: #FFF;
   font-weight: 900;
-  font-size: 14px;
+  font-size: 15px;
   cursor: pointer;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.45);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.45);
 }
 
 .num-ball-btn.active {
   transform: scale(1.05);
-  border-color: #2C3E50;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.18);
+  border-color: #1E293B;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .num-progress-box {
   background: #F8FAFC;
-  padding: 8px 12px;
-  border-radius: 12px;
-  border: 1px solid #E2E8F0;
-  font-size: 12px;
+  padding: 10px 14px;
+  border-radius: 13px;
+  border: 1.5px solid #E2E8F0;
+  font-size: 13px;
 }
 
 .progress-bar-bg {
   width: 100%;
-  height: 10px;
+  height: 12px;
   background: #E2E8F0;
   border-radius: 99px;
   overflow: hidden;
-  margin-top: 5px;
+  margin-top: 6px;
 }
 
 .progress-bar-fill {
@@ -1146,9 +1064,9 @@ html, body {
 
 .num-game-svg-board {
   position: relative;
-  width: min(100%, 350px);
+  width: min(100%, 400px);
   aspect-ratio: 1 / 1;
-  border-radius: 18px;
+  border-radius: 20px;
   border: 4px solid #CBD5E1;
   overflow: hidden;
   background: #FFF;
@@ -1160,50 +1078,47 @@ html, body {
   display: block;
 }
 
-/* 萬花筒畫布 */
 .mandala-canvas {
-  width: min(100%, 350px);
+  width: min(100%, 400px);
   aspect-ratio: 1 / 1;
   background: radial-gradient(circle at center, #1E1B4B 0%, #0F172A 100%);
-  border-radius: 18px;
+  border-radius: 20px;
   border: 4px solid #6366F1;
-  box-shadow: 0 0 20px rgba(99, 102, 241, 0.35);
+  box-shadow: 0 0 22px rgba(99, 102, 241, 0.35);
   cursor: crosshair;
   touch-action: none;
 }
 
 .mandala-color-bar {
   display: flex;
-  gap: 7px;
+  gap: 8px;
   flex-wrap: wrap;
-  margin-top: 6px;
 }
 
 .mini-color-dot {
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  border: 2.5px solid rgba(255,255,255,0.6);
+  border: 3px solid rgba(255, 255, 255, 0.6);
   cursor: pointer;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
 .mini-color-dot.active {
   transform: scale(1.16);
-  border-color: #2C3E50;
+  border-color: #1E293B;
 }
 
-/* 像素拼豆 12x12 網格 */
 .pixel-grid-board {
-  width: min(100%, 350px);
+  width: min(100%, 400px);
   aspect-ratio: 1 / 1;
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   grid-template-rows: repeat(12, 1fr);
-  gap: 2.5px;
-  padding: 8px;
+  gap: 3px;
+  padding: 10px;
   background: #CBD5E1;
-  border-radius: 16px;
+  border-radius: 18px;
   touch-action: none;
 }
 
@@ -1211,18 +1126,18 @@ html, body {
   background: #FFFFFF;
   border-radius: 4px;
   cursor: pointer;
-  box-shadow: inset 0 -1.5px 0 rgba(0,0,0,0.08);
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.08);
 }
 
-/* 色彩魔法調色實驗室 */
 .mixer-card-container {
   background: #FFFFFF;
-  border-radius: var(--radius-lg);
-  padding: 16px;
-  box-shadow: var(--shadow-soft);
+  border-radius: var(--radius-xl);
+  padding: 18px;
+  box-shadow: var(--shadow-card);
+  border: 2px solid #E2E8F0;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
 }
 
 .mixer-quest-header {
@@ -1230,32 +1145,31 @@ html, body {
   align-items: center;
   justify-content: space-between;
   background: #FFFBEB;
-  padding: 10px 14px;
-  border-radius: 14px;
+  padding: 12px 16px;
+  border-radius: 16px;
   border: 2px solid #FDE68A;
-  gap: 10px;
+  gap: 12px;
   flex-wrap: wrap;
 }
 
 .quest-owl {
-  font-size: 32px;
+  font-size: 36px;
 }
 
 .mixer-score-badge {
   background: #FEF3C7;
-  padding: 6px 12px;
+  padding: 8px 14px;
   border-radius: 99px;
   font-weight: 900;
   color: #B45309;
-  font-size: 13px;
 }
 
 .mixer-lab-arena {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 24px;
-  padding: 6px;
+  gap: 28px;
+  padding: 8px;
   flex-wrap: wrap;
 }
 
@@ -1263,23 +1177,23 @@ html, body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   background: #F8FAFC;
-  padding: 12px 22px;
-  border-radius: 16px;
+  padding: 16px 26px;
+  border-radius: 18px;
   border: 2px solid #E2E8F0;
 }
 
 .potion-cup {
-  width: 90px;
-  height: 90px;
-  border-radius: 22px;
-  border: 3.5px solid #2C3E50;
+  width: 100px;
+  height: 100px;
+  border-radius: 24px;
+  border: 4px solid #1E293B;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 36px;
-  box-shadow: inset 0 -8px 0 rgba(0,0,0,0.12);
+  font-size: 40px;
+  box-shadow: inset 0 -8px 0 rgba(0, 0, 0, 0.12);
   transition: background 0.3s ease;
 }
 
@@ -1288,7 +1202,7 @@ html, body {
 }
 
 .mixer-plus {
-  font-size: 28px;
+  font-size: 32px;
 }
 
 .base-paints-row {
@@ -1299,27 +1213,26 @@ html, body {
 }
 
 .paint-bottle-btn {
-  padding: 10px 16px;
-  border-radius: 14px;
-  border: 2.5px solid #2C3E50;
+  padding: 12px 18px;
+  border-radius: 15px;
+  border: 3px solid #1E293B;
   background: var(--bottle-color, #FF3B30);
   color: #FFFFFF;
   font-weight: 900;
-  font-size: 13.5px;
+  font-size: 14px;
   cursor: pointer;
-  box-shadow: 0 4px 0 rgba(44, 62, 80, 0.2);
+  box-shadow: 0 4px 0 rgba(30, 41, 59, 0.22);
 }
 
 .paint-bottle-btn.reset-bottle {
   background: #64748B;
 }
 
-/* 彩虹刮刮畫 */
 .scratch-board-wrap {
   position: relative;
-  width: min(100%, 350px);
+  width: min(100%, 400px);
   aspect-ratio: 1 / 1;
-  border-radius: 18px;
+  border-radius: 20px;
   overflow: hidden;
   border: 4px solid #F59E0B;
 }
@@ -1336,7 +1249,7 @@ html, body {
 .scratch-underlay svg {
   width: 90%;
   height: 90%;
-  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.35));
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.35));
 }
 
 .scratch-overlay-canvas {
@@ -1354,48 +1267,49 @@ html, body {
 .gallery-top-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-bottom: 14px;
+  gap: 14px;
+  margin-bottom: 16px;
 }
 
 .parent-report-card,
 .ipad-guide-card {
   background: #FFFFFF;
-  padding: 14px;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-soft);
+  padding: 16px;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-card);
+  border: 2px solid #E2E8F0;
 }
 
 .parent-report-card h3,
 .ipad-guide-card h3 {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 900;
-  margin-bottom: 5px;
+  margin-bottom: 6px;
 }
 
 .parent-report-card p {
-  font-size: 11.5px;
-  color: var(--text-muted);
-  margin-bottom: 8px;
+  font-size: 12px;
+  color: var(--text-sub);
+  margin-bottom: 10px;
 }
 
 .skill-bars-list {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .skill-row {
   display: grid;
-  grid-template-columns: 135px 1fr 38px;
+  grid-template-columns: 140px 1fr 40px;
   align-items: center;
-  gap: 6px;
-  font-size: 11.5px;
+  gap: 8px;
+  font-size: 12px;
   font-weight: 800;
 }
 
 .s-bar {
-  height: 9px;
+  height: 10px;
   background: #F1F5F9;
   border-radius: 99px;
   overflow: hidden;
@@ -1407,39 +1321,38 @@ html, body {
 }
 
 .ipad-steps {
-  padding-left: 16px;
-  font-size: 12px;
-  line-height: 1.55;
-  color: var(--text-dark);
+  padding-left: 18px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-main);
 }
 
 .ipad-steps li {
-  margin-bottom: 5px;
+  margin-bottom: 6px;
 }
 
 .section-subtitle {
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 900;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .saved-gallery-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(195px, 1fr));
-  gap: 12px;
-  padding-bottom: 32px;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 14px;
 }
 
 .framed-art-card {
   background: #FFFFFF;
-  border-radius: 16px;
-  padding: 10px;
-  border: 5px solid #F59E0B;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.07);
+  border-radius: 18px;
+  padding: 12px;
+  border: 6px solid #F59E0B;
+  box-shadow: var(--shadow-card);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
 .framed-art-card img {
@@ -1447,27 +1360,25 @@ html, body {
   aspect-ratio: 1 / 1;
   object-fit: contain;
   background: #FFFFFF;
-  border-radius: 8px;
+  border-radius: 10px;
   border: 2px solid #FEF3C7;
 }
 
-/* 十大 APP 卡片 */
 .top10-cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 12px;
-  padding-bottom: 36px;
+  grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+  gap: 14px;
 }
 
 .app-review-card {
   background: #FFFFFF;
-  border-radius: 16px;
-  padding: 14px;
+  border-radius: 18px;
+  padding: 16px;
   border: 2px solid #E2E8F0;
-  box-shadow: var(--shadow-soft);
+  box-shadow: var(--shadow-card);
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .app-rank-header {
@@ -1480,40 +1391,27 @@ html, body {
   background: linear-gradient(135deg, #FF5E7E, #FF9E00);
   color: #FFF;
   font-weight: 900;
-  padding: 3px 9px;
+  padding: 4px 10px;
   border-radius: 99px;
-  font-size: 11.5px;
+  font-size: 12px;
 }
 
 .app-origin {
-  font-size: 11.5px;
-  color: var(--text-muted);
+  font-size: 12px;
+  color: var(--text-sub);
   font-weight: 700;
 }
 
 .app-box-point {
-  font-size: 12px;
-  padding: 7px 9px;
-  border-radius: 9px;
-  line-height: 1.4;
+  font-size: 12.5px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  line-height: 1.45;
 }
 
-.app-box-point.pro {
-  background: #F0FDF4;
-  color: #166534;
-}
-
-.app-box-point.con {
-  background: #FEF2F2;
-  color: #991B1B;
-}
-
-.app-box-point.our {
-  background: #EFF6FF;
-  color: #1E40AF;
-  font-weight: 700;
-  border: 1px solid #BFDBFE;
-}
+.app-box-point.pro { background: #F0FDF4; color: #166534; }
+.app-box-point.con { background: #FEF2F2; color: #991B1B; }
+.app-box-point.our { background: #EFF6FF; color: #1E40AF; font-weight: 700; border: 1px solid #BFDBFE; }
 
 /* 榮譽獎狀彈窗 */
 .modal-backdrop {
@@ -1524,83 +1422,67 @@ html, body {
   align-items: center;
   justify-content: center;
   z-index: 9000;
-  padding: 14px;
+  padding: 16px;
 }
 
-.modal-backdrop.hidden {
-  display: none;
-}
-
-.certificate-dialog {
+. certificate-dialog, .certificate-dialog {
   background: #FFFBEB;
-  max-width: 500px;
+  max-width: 520px;
   width: 100%;
-  border-radius: 24px;
-  padding: 12px;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+  border-radius: 26px;
+  padding: 14px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
 }
 
 .cert-border {
-  border: 4px double #D97706;
-  border-radius: 16px;
-  padding: 20px;
+  border: 5px double #D97706;
+  border-radius: 18px;
+  padding: 22px;
   text-align: center;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .cert-ribbon {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 900;
   color: #B45309;
 }
 
 .cert-body {
-  font-size: 14px;
-  line-height: 1.6;
+  font-size: 15px;
+  line-height: 1.65;
 }
 
 .cert-seal {
-  font-size: 28px;
+  font-size: 30px;
   color: #D97706;
 }
 
 /* ==========================================================================
-   📱 針對 iPad 直向 (Portrait 744px) 與較矮橫向視窗 (Height <= 660px) 的自動自適應佈局
+   📱 響應式：針對 iPad 直向 (Portrait <= 960px) 與手機自動調整
+   畫布自動置於第一排，工具欄與色盤分居左右兩欄，完全不重疊、不互擋！
    ========================================================================== */
-@media (max-width: 920px) {
-  .top-bar {
-    flex-wrap: wrap;
-    padding: 6px 10px;
-  }
-  .main-nav {
-    order: 3;
-    width: 100%;
-    justify-content: space-between;
-    padding-top: 4px;
-  }
-  /* 直向模式下：魔法畫室自動改為上下可順暢捲動配置，畫布在最上方，工具與色盤在下方，完全不遮擋！ */
-  .studio-layout {
+@media (max-width: 960px) {
+  .studio-workbench {
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: auto auto;
-    height: auto;
-    overflow: visible;
   }
-  .canvas-stage-area {
+  .canvas-center-panel {
     grid-column: 1 / -1;
     order: -1;
-    height: auto;
-  }
-  .artboard-container {
-    width: min(86vw, 420px) !important;
-    height: min(86vw, 420px) !important;
   }
   .minigame-split,
   .gallery-top-grid {
     grid-template-columns: 1fr;
   }
-  .games-selector-bar {
-    grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 640px) {
+  .main-nav {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .studio-workbench {
+    grid-template-columns: 1fr;
   }
 }

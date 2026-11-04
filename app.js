@@ -1,6 +1,7 @@
 /**
  * 🎨 彩虹魔法畫布 Rainbow Magic Canvas Pro - 主互動核心與5大創意藝術小遊戲引擎
- * (iPad mini 7 平板瀏覽器完美適配版：含 visualViewport 動態高度偵測 + ResizeObserver 畫布自適應縮放)
+ * 採用與《數感奇幻島》一致的「自然文檔流 (Natural Document Flow)」平板優化架構：
+ * 不鎖定視窗高度，全頁可自然順暢上下捲動，按鈕永遠清晰分明、絕不重疊或遮擋！
  */
 
 class RainbowArtApp {
@@ -28,13 +29,12 @@ class RainbowArtApp {
     this.numberGuideVisible = false;
     this.aliveDancing = false;
 
-    // 玩家統計與平板適配狀態
+    // 玩家統計與狀態
     this.stars = 30;
     this.galleryWorks = [];
     this.leftHanded = false;
     this.ipadFrameMode = false;
     this.portraitMode = false;
-    this.simSafariBar = true; // 預設開啟模擬 Safari 頂部網址列以驗證不遮擋
 
     // 小遊戲狀態
     this.currentMiniGame = 'number';
@@ -55,9 +55,6 @@ class RainbowArtApp {
     this.canvas = document.getElementById('drawingCanvas');
     this.ctx = this.canvas.getContext('2d');
 
-    // 📱 啟動 iPad Safari 動態可視高度 (visualViewport) 與畫布自適應引擎
-    this.setupTabletViewportEngine();
-
     this.renderPaletteSidebar();
     this.renderStampSelector();
     this.renderCategoryFilter('all');
@@ -76,64 +73,6 @@ class RainbowArtApp {
     this.initScratchMiniGame();
 
     this.updateStatsUI();
-  }
-
-  /**
-   * 📱 核心平板瀏覽器優化引擎：
-   * 1. 即時監聽 window.visualViewport 與 resize，扣掉 iPad Safari 頂部網址列/書籤列與底部工具列，設定精確的 --app-height
-   * 2. 使用 ResizeObserver 動態測量中央畫布區 (canvasFrameOuter) 的可用寬高，自動設定正方形畫布邊長 (--board-size)，
-   *    確保底部「上一張 / 選公版 / 下一張 / 裝裱收藏」按鈕永遠 100% 完整呈現在螢幕內，絕不被蓋住！
-   */
-  setupTabletViewportEngine() {
-    const updateViewportVars = () => {
-      const vvHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-      document.documentElement.style.setProperty('--app-height', `${Math.floor(vvHeight)}px`);
-      this.recalcBoardSize();
-    };
-
-    window.addEventListener('resize', updateViewportVars);
-    window.addEventListener('orientationchange', () => setTimeout(updateViewportVars, 150));
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener('resize', updateViewportVars);
-      window.visualViewport.addEventListener('scroll', updateViewportVars);
-    }
-
-    const outer = document.getElementById('canvasFrameOuter');
-    if (outer && 'ResizeObserver' in window) {
-      const ro = new ResizeObserver(() => this.recalcBoardSize());
-      ro.observe(outer);
-    }
-
-    updateViewportVars();
-  }
-
-  recalcBoardSize() {
-    const outer = document.getElementById('canvasFrameOuter');
-    const board = document.getElementById('artboardContainer');
-    if (!outer || !board) return;
-
-    const rect = outer.getBoundingClientRect();
-    if (rect.width > 40 && rect.height > 40) {
-      // 取可用寬高的最小值再預留 10px 邊距，讓正方形畫布完美嵌入中央舞台而不擠壓底欄
-      const size = Math.max(210, Math.min(rect.width - 12, rect.height - 8, 450));
-      board.style.setProperty('--board-size', `${Math.floor(size)}px`);
-    }
-  }
-
-  // 一鍵請求平板全螢幕模式（或提示 Safari 加入主畫面）
-  requestTabletFullscreen() {
-    const docEl = document.documentElement;
-    const req = docEl.requestFullscreen || docEl.webkitRequestFullscreen;
-    if (!document.fullscreenElement && !document.webkitFullscreenElement && req) {
-      req.call(docEl).catch(() => {
-        window.soundEngine.speak('在 iPad Safari 瀏覽器中，您可以點擊頂部分享按鈕，選擇「加入主畫面」，就能隱藏網址列享受全螢幕喔！');
-      });
-    } else if (document.exitFullscreen || document.webkitExitFullscreen) {
-      const exit = document.exitFullscreen || document.webkitExitFullscreen;
-      exit.call(document).catch(() => {});
-    } else {
-      window.soundEngine.speak('在 iPad Safari 瀏覽器中，您可以點擊頂部分享按鈕，選擇「加入主畫面」，就能隱藏網址列享受全螢幕喔！');
-    }
   }
 
   loadSavedState() {
@@ -174,15 +113,12 @@ class RainbowArtApp {
   // ==================== 頂部快速切換與 iPad mini 7 預覽模式 ====================
   switchTab(tabId) {
     this.currentTab = tabId;
-    document.querySelectorAll('.nav-tab').forEach(btn => {
+    document.querySelectorAll('.nav-btn').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.tab === tabId);
     });
     document.querySelectorAll('.tab-panel').forEach(panel => {
       panel.classList.toggle('active', panel.id === `tab-${tabId}`);
     });
-    if (tabId === 'studio') {
-      setTimeout(() => this.recalcBoardSize(), 30);
-    }
     window.soundEngine.playColorNote(3);
   }
 
@@ -211,7 +147,7 @@ class RainbowArtApp {
     document.getElementById('studioLayout').classList.toggle('left-handed', this.leftHanded);
     const btn = document.getElementById('btnHand');
     btn.classList.toggle('active', this.leftHanded);
-    btn.textContent = this.leftHanded ? '🤚 左手' : '🤚 右手';
+    btn.textContent = this.leftHanded ? '🤚 左手版面' : '🤚 右手版面';
     window.soundEngine.playColorNote(5);
   }
 
@@ -219,24 +155,12 @@ class RainbowArtApp {
     this.ipadFrameMode = typeof forceState === 'boolean' ? forceState : !this.ipadFrameMode;
     const wrapper = document.getElementById('deviceWrapper');
     wrapper.classList.toggle('ipad-frame-mode', this.ipadFrameMode);
-    wrapper.classList.toggle('sim-safari-bar', this.ipadFrameMode && this.simSafariBar);
     document.getElementById('btnIpadMode').classList.toggle('active', this.ipadFrameMode);
-    setTimeout(() => this.recalcBoardSize(), 60);
-  }
-
-  toggleSafariBarSim() {
-    this.simSafariBar = !this.simSafariBar;
-    const wrapper = document.getElementById('deviceWrapper');
-    wrapper.classList.toggle('sim-safari-bar', this.ipadFrameMode && this.simSafariBar);
-    const btn = document.getElementById('btnSimSafariBar');
-    if (btn) btn.classList.toggle('active', this.simSafariBar);
-    setTimeout(() => this.recalcBoardSize(), 60);
   }
 
   toggleOrientation() {
     this.portraitMode = !this.portraitMode;
     document.getElementById('deviceWrapper').classList.toggle('portrait-mode', this.portraitMode);
-    setTimeout(() => this.recalcBoardSize(), 60);
   }
 
   // ==================== 色盤、漸層漆與印章選擇器 ====================
@@ -338,7 +262,8 @@ class RainbowArtApp {
     const tpl = window.TEMPLATES_DB[this.currentTemplateIdx];
 
     document.getElementById('currentTplIcon').textContent = tpl.icon;
-    document.getElementById('currentTplTitle').innerHTML = `${tpl.title} <small id="currentTplEn">${tpl.en}</small>`;
+    document.getElementById('currentTplTitle').textContent = tpl.title;
+    document.getElementById('currentTplEn').textContent = tpl.en;
     document.getElementById('currentTplFact').textContent = tpl.fact;
     document.getElementById('currentTplIndex').textContent = tpl.index;
 
@@ -359,13 +284,13 @@ class RainbowArtApp {
     this.undoStack = [];
     this.renderNumberGuideBadges();
     this.selectTool(this.activeTool);
-    setTimeout(() => this.recalcBoardSize(), 20);
   }
 
   loadBlankCanvas() {
     this.isBlankMode = true;
     document.getElementById('currentTplIcon').textContent = '📄';
-    document.getElementById('currentTplTitle').innerHTML = `自由創作空白畫布 <small>Free Drawing Paper</small>`;
+    document.getElementById('currentTplTitle').textContent = '自由創作空白畫布';
+    document.getElementById('currentTplEn').textContent = 'Free Drawing Paper';
     document.getElementById('currentTplFact').textContent = '盡情使用粉彩蠟筆、水彩、霓虹筆、七彩彩虹筆與 40 款貼紙印章自由創作吧！';
     document.getElementById('svgTemplateHolder').innerHTML = `
       <svg viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
@@ -710,7 +635,7 @@ class RainbowArtApp {
     if (this.galleryWorks.length === 0) {
       grid.innerHTML = `
         <div class="framed-art-card" style="grid-column: 1 / -1; padding: 24px;">
-          <p style="font-size:14px;font-weight:800;color:#64748B;">🎨 目前美術館還沒有掛上畫作喔！快去「魔法畫室」或「5大小遊戲」完成作品並點擊【📸 裝裱收藏】吧！</p>
+          <p style="font-size:14px;font-weight:800;color:#64748B;">🎨 目前美術館還沒有掛上畫作喔！快去「魔法填色畫室」或「5大藝術小遊戲」完成作品並點擊【📸 裝裱收藏】吧！</p>
         </div>
       `;
       return;
@@ -772,6 +697,7 @@ class RainbowArtApp {
   selectTemplateFromGallery(idx) {
     this.loadTemplate(idx);
     this.switchTab('studio');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     window.soundEngine.playColorNote(6);
   }
 
@@ -1271,7 +1197,7 @@ class RainbowArtApp {
     ctx.fillStyle = '#94A3B8';
     ctx.font = 'bold 18px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('✨ 用手指或畫筆刮開黑色魔法塗層 ✨', 220, 220);
+    ctx.fillText('✨ 用手指或畫筆刮開黑色魔法塗層 ✨', 210, 210);
 
     document.getElementById('scratchPercentText').textContent = '0%';
     document.getElementById('scratchProgressBar').style.width = '0%';
